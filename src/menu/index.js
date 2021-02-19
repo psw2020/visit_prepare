@@ -17,7 +17,7 @@ const menuTemplate = {
                 {label: 'sub3'},
             ]),
             click() {
-                console.log(222)
+                console.log(222);
             }
         },
         {

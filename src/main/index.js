@@ -1,7 +1,9 @@
-import {app, BrowserWindow, screen, Menu, MenuItem} from 'electron';
-
+import path from 'path';
+import {app, BrowserWindow, screen, Menu, Tray} from 'electron';
 import {menuTemplate} from '../menu/index';
+import icon from 'trayTemplate.png';
 const lock = app.requestSingleInstanceLock();
+let tray ='';
 
 if (!lock) {
     app.quit();
@@ -21,7 +23,7 @@ const createMenu = () => {
     Menu.setApplicationMenu(menu);
 }
 
-const createWindow = options => {
+const createWindow = () => {
     const {width, height} = screen.getPrimaryDisplay().workAreaSize;
     const window = new BrowserWindow({
         width: 800,
@@ -35,6 +37,7 @@ const createWindow = options => {
         titleBarStyle: 'hidden',
         autoHideMenuBar: false,
         backgroundColor: '#2980b9',
+        closable: false,
         webPreferences: {
             nodeIntegration: true
         }
@@ -44,11 +47,21 @@ const createWindow = options => {
     window.webContents.on("context-menu", (event, params) => {
         ctxMenu.popup(window, params.x, params.y);
     })
+    const trayMenu = Menu.buildFromTemplate([
+        {label:'point1'},
+        {label:'point2'},
+        {label:'point3'}
+    ])
+    tray = new Tray(path.resolve(__dirname, icon));
+    tray.setToolTip('app2');
+    tray.setContextMenu(trayMenu);
+    tray.on("double-click", ()=>{
+    window.isVisible() ? window.hide() : window.show();
+    })
     // window.webContents.openDevTools();
 }
 
 app.on('ready', () => {
     createMenu();
     createWindow();
-
 });
