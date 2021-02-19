@@ -1,5 +1,5 @@
 import path from 'path';
-import {app, BrowserWindow, screen, Menu, Tray} from 'electron';
+import {app, BrowserWindow, screen, Menu, Tray, ipcMain} from 'electron';
 import {menuTemplate} from '../menu/index';
 import icon from 'trayTemplate.png';
 const lock = app.requestSingleInstanceLock();
@@ -23,6 +23,8 @@ const createMenu = () => {
     Menu.setApplicationMenu(menu);
 }
 
+
+
 const createWindow = () => {
     const {width, height} = screen.getPrimaryDisplay().workAreaSize;
     const window = new BrowserWindow({
@@ -39,7 +41,8 @@ const createWindow = () => {
         backgroundColor: '#2980b9',
         closable: false,
         webPreferences: {
-            nodeIntegration: true
+            nodeIntegration: true,
+            enableRemoteModule: true
         }
     });
     window.loadFile('renderer/index.html');
@@ -58,10 +61,16 @@ const createWindow = () => {
     tray.on("double-click", ()=>{
     window.isVisible() ? window.hide() : window.show();
     })
-    // window.webContents.openDevTools();
+
+    ipcMain.on('data', (_,data)=>{
+        const number = Math.random() * 10;
+        window.webContents.send('data', {number});
+    })
+    window.webContents.openDevTools();
 }
 
 app.on('ready', () => {
     createMenu();
     createWindow();
 });
+
