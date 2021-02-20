@@ -1,9 +1,10 @@
-// https://electronjs.org/docs/tutorial/security
-// Preload File that should be loaded into browser window instead of
-// setting nodeIntegration: true for browser window
+import {ipcRenderer, shell} from 'electron';
 
-import { ipcRenderer } from 'electron';
+window.openURL = url => {
+    shell.openExternal(url);
+}
 
-window.onLoaded = (callback) => {
-  ipcRenderer.on('loaded', callback);
-};
+window.onload = () => {
+    const button = document.getElementById('but1');
+    button.addEventListener('click', () => openURL('https://renault-remont.ru'));
+}

@@ -16,6 +16,9 @@ if (!lock) {
     });
 }
 
+ipcMain.on('offline', ()=>console.log('app offline'));
+ipcMain.on('online', ()=>console.log('app online'));
+
 const ctxMenu = new Menu.buildFromTemplate(menuTemplate.ctx);
 
 const createMenu = () => {
@@ -41,8 +44,7 @@ const createWindow = () => {
         backgroundColor: '#2980b9',
         closable: false,
         webPreferences: {
-            nodeIntegration: true,
-            enableRemoteModule: true
+            preload : path.join(app.getAppPath(),'preload','index.js')
         }
     });
     window.loadFile('renderer/index.html');
@@ -66,7 +68,7 @@ const createWindow = () => {
         const number = Math.random() * 10;
         window.webContents.send('data', {number});
     })
-    window.webContents.openDevTools();
+    window.webContents.openDevTools({mode:"detach"});
 }
 
 app.on('ready', () => {
