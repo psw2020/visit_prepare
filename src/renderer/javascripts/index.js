@@ -2,11 +2,15 @@ require('application.css');
 
 window.onload = () => {
     window.addEventListener('online', () => {
-        document.getElementById('online').innerHTML = 'app online';
-        document.getElementById('offline').innerHTML = null;
+    const alert = new Notification('Title',{
+        body: 'MEssage body online',
+        silent: true
+    })
     });
     window.addEventListener('offline', () => {
-        document.getElementById('offline').innerHTML = 'app offline';
-        document.getElementById('online').innerHTML = null;
+        const alert = new Notification('Title',{
+            body: 'MEssage body offline',
+            silent: true
+        })
     });
 }
