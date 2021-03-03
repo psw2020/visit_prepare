@@ -7,11 +7,87 @@
     <meta http-equiv="Content-Security-Policy" content="script-src 'self'">
 </head>
 <body>
-<div class="message">
-    Bonjorno
+<div class="main">
+    <div class="taskList">
+
+        <div class="taskListItem">
+            <p class="date">05.03 11:00</p>
+            <p class="model">Nissan Almera</p>
+            <p class="gosnumber">н424нк190</p>
+        </div>
+
+        <div class="taskListItem">
+            <p class="date">05.03 21:00</p>
+            <p class="model">Renault Laguna</p>
+            <p class="gosnumber">о587ее777</p>
+        </div>
+
+        <div class="taskListItem">
+            <p class="date">05.03 14:25</p>
+            <p class="model">Nissan Almera</p>
+            <p class="gosnumber">н424нк190</p>
+        </div>
+
+        <div class="taskListItem">
+            <p class="date">05.03 18:56</p>
+            <p class="model">Renault Laguna</p>
+            <p class="gosnumber">о587ее777</p>
+        </div>
+
+    </div>
+    <div class="workArea">
+
+        <h3>Общая информация</h3>
+        <p>Иванов А.О.</p>
+        <p>Телефон: +7 (987) 123-45-67</p>
+        <p>С нами с 05.09.2005</p>
+        <p>Средний чек: 12 345р</p>
+        <p>Своих запчастей: 12%</p>
+
+        <h3>Бонусная программа</h3>
+        <p>Доступно бонусов: 400</p>
+        <p>Ближайшее сгорание: 25.03.2021</p>
+
+        <h3>Наличие запчастей</h3>
+        <div class="partsList">
+
+            <div class="item">
+                <div class="workName">Замена масла</div>
+                <div class="input"><label><input type="checkbox"/></label></div>
+                <div class="employee">
+                    <label>
+                        <select name="employee" id="">
+                            <option value="null"></option>
+                            <option value="ololo">Фадин</option>
+                        </select>
+                    </label>
+                </div>
+            </div>
+
+            <div class="item">
+                <div class="workName">Ремень ГРМ с/у</div>
+                <div class="input"><label><input type="checkbox"/></label></div>
+                <div class="employee">
+                    <label>
+                    <select name="employee" id="">
+                        <option value="null"></option>
+                        <option value="ololo">Фадин</option>
+                    </select>
+                    </label>
+                </div>
+            </div>
+
+        </div>
+
+        <h3>Обязательно предложить</h3>
+        <label><input type="text" id="recommendation"></label>
+
+        <div class="buttons">
+            <button>Сохранить</button>
+            <button>Оформить</button>
+        </div>
+
+    </div>
 </div>
-<div id="online" class="alert success"></div>
-<div id="offline" class="alert error"></div>
-<div id="message"></div>
 </body>
 </html>

@@ -5,6 +5,5 @@ window.openURL = url => {
 }
 
 window.onload = () => {
-    const button = document.getElementById('but1');
-    button.addEventListener('click', () => openURL('https://renault-remont.ru'));
+
 }

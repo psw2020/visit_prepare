@@ -5,29 +5,79 @@ html, body {
   overflow: hidden;
 }
 
+h3{
+  border-bottom: 1px solid #9fcdff;
+}
+
 body {
-  font-family: -apple-system, "Helvetica Neue", Helvetica, sans-serif;background: #2980b9;
+  font-family: Arial, serif;
+  color: white;
+  background: #09416D;
+  overflow: auto;
 }
 
-.message {
-  position: absolute;
-  width: 500px;
-  height: 250px;
-  top: 50%;
-  left: 50%;
-  color: #ffffff;
-  font-weight: 200;
-  text-align: center;
-  margin-top: -125px;
-  margin-left: -250px;
+.main{
+  display: flex;
+
 }
 
-.message h1 {
-  font-size: 50px;
-  font-weight: 100;
-  color: #333;
+.taskList{
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+.workArea{
+  display: flex;
+  flex-direction: column;
+  flex: 3;
+  padding: 10px;
 }
 
-.message div {
+.taskListItem{
+  background-color: #0078D7;
+  padding: 5px 10px;
+  margin: 5px 10px;
+  display: flex;
+  flex-direction: column;
+  cursor: pointer;
+  border: 1px solid #0078D7;
+}
+
+.taskListItem:hover{
+  background-color: #005cbf;
+  transition: background-color .5s ease;
+  border: 1px solid #7abaff;
+}
+
+.taskListItem p{padding: 0;margin: 0;}
+
+.partsList{
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 10px;
+}
+
+.partsList .item{
+  display: flex;
+  flex-direction: row;
+  margin-top: 5px;
+}
+
+.partsList .item .workName{
+  display: flex;
+  flex: 1;
+}
+
+.partsList .item .input{
+  display: flex;
+  flex: 1;
+}
+
+.partsList .item .employee{
+  display: flex;
+  flex: 1;
+}
+
+#recommendation{
   margin-bottom: 10px;
 }
