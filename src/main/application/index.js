@@ -1,11 +1,15 @@
 import {app, BrowserWindow, screen, Tray, ipcMain} from 'electron';
 import path from "path";
 import icon from 'trayTemplate.png';
+import Api from './api';
+
 
 export default class VisitPrepare {
     constructor() {
         this.tray = true;
         this.win = null;
+        this.api = new Api();
+        this.subscribeForIPC();
         this.lock = app.requestSingleInstanceLock();
         app.whenReady().then(() => this.createWindow());
             }
@@ -24,7 +28,7 @@ export default class VisitPrepare {
         }
         const {width, height} = screen.getPrimaryDisplay().workAreaSize;
         this.window = new BrowserWindow({
-            width: 800,
+            width: 1024,
             height: 600,
             minWidth: Math.round(width / 3),
             minHeight: Math.round(height / 3),
@@ -59,6 +63,14 @@ export default class VisitPrepare {
         this.window.on('closed', () => {
             this.window = null;
         })
+
+    }
+
+    subscribeForIPC(){
+        ipcMain.on('getTaskList', ()=>{
+            this.api.getTaskList(0,0).then(res=>this.window.webContents.send('taskList',res));
+        })
+
 
     }
 

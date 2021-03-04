@@ -24,12 +24,12 @@ body {
 .taskList{
   display: flex;
   flex-direction: column;
-  flex: 1;
+  flex: 2;
 }
 .workArea{
   display: flex;
   flex-direction: column;
-  flex: 3;
+  flex: 4;
   padding: 10px;
 }
 
