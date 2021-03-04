@@ -20,8 +20,10 @@ window.createTaskList = (arr) => {
 
     document.getElementsByClassName('taskList')[0].innerHTML = str;
     let items = document.querySelectorAll('.taskListItem');
+
     items.forEach(v => v.addEventListener('click', () => {
-        console.log(v.dataset.doh, v.dataset.clid, v.dataset.contact);
+        loadBaseInfo(v.dataset.doh, v.dataset.clid, v.dataset.contact);
     }))
+
 }
 
