@@ -1,8 +1,9 @@
 import fetch from 'cross-fetch';
+import user from '../../../private/api';
 
 export default class Api{
     constructor() {
-        this.user = {login: 'visitPrepare', password: 'PPS4BHTcId'};
+        this.user = user;
         this.apiHost = 'http://127.0.0.1:3010/';
         this.token = '';
     }
