@@ -2,10 +2,7 @@
   "name": "visit_prepare",
   "version": "0.1.0",
   "description": "VisitPrepare application build with Electron",
-  "author": {
-    "name": "psw2020",
-    "email": ""
-  },
+  "author": "psw2020",
   "repository": {},
   "dependencies": {
     "cross-fetch": "^3.0.6",
@@ -31,5 +28,12 @@
       "publish": null,
       "category": "your.app.category.type"
     }
+  },
+  "main": ".eslintrc.js",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
   }
 }

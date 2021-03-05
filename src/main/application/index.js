@@ -12,7 +12,7 @@ export default class VisitPrepare {
         this.subscribeForIPC();
         this.lock = app.requestSingleInstanceLock();
         app.whenReady().then(() => this.createWindow());
-            }
+    }
 
     createWindow() {
         if (!this.lock) {
@@ -41,19 +41,18 @@ export default class VisitPrepare {
             backgroundColor: '#2980b9',
             closable: true,
             webPreferences: {
-                preload : path.join(app.getAppPath(),'preload','index.js')
+                preload: path.join(app.getAppPath(), 'preload', 'index.js')
             }
         })
         this.window.loadFile('renderer/index.html');
         this.window.webContents.openDevTools({mode: 'detach'});
 
         this.tray = new Tray(path.resolve(__dirname, icon));
-        this.tray.on("double-click", ()=>{
+        this.tray.on("double-click", () => {
             this.window.isVisible() ? this.window.hide() : this.window.show();
         })
 
         this.window.on("ready-to-show", () => this.window.show());
-
 
 
         this.window.webContents.on('did-finish-load', () => {
@@ -66,9 +65,22 @@ export default class VisitPrepare {
 
     }
 
-    subscribeForIPC(){
-        ipcMain.on('getTaskList', ()=>{
-            this.api.getTaskList(0,0).then(res=>this.window.webContents.send('taskList',res));
+    subscribeForIPC() {
+        ipcMain.on('getTaskList', () => {
+            const from = 0;
+            const to = 0;
+            this.api.req(`task/getTaskList?from=${from}&to=${to}`)
+                .then(res => this.window.webContents.send('taskList', res))
+                .catch(() => this.window.webContents.send('getTaskListErr'));
+        });
+
+        ipcMain.on('getOrderInfo', async (_, data) => {
+            let contact = await this.api.req(`contact/getContact?id=${data.contact}`);
+            let client = await this.api.req(`client/getBaseInfo/${data.clid}`);
+            let orderList = await this.api.req(`order/getOrderListFromClient?id=${data.clid}`);
+            console.log(client);
+
+
         })
 
 

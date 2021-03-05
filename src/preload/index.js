@@ -18,6 +18,10 @@ ipcRenderer.on('taskList', (_, data) => {
     window.createTaskList(clearObj(data));
 });
 
+ipcRenderer.on('getTaskListErr', (_, data) => {
+    window.getTaskListErr();
+});
+
 function clearObj(arr) {
     let a = [];
     arr.forEach(v => {
@@ -28,7 +32,6 @@ function clearObj(arr) {
     return a;
 }
 
-window.loadBaseInfo = (doh, clid, contact) =>{
-    console.log(doh,clid,contact);
+window.getOrderInfo = (doh, clid, contact)=> {
+    ipcRenderer.send('getOrderInfo',{doh,clid,contact});
 }
-

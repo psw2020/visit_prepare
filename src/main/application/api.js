@@ -22,12 +22,12 @@ export default class Api{
         }
     }
 
-    async getClientBaseInfo(id) {
+    async req(url) {
         await this.auth(this.user).then(res => {
             this.token = res.accessToken
         });
 
-        let res = await fetch(this.apiHost + 'client/getBaseInfo/' + id, {
+        let res = await fetch(this.apiHost + url, {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
@@ -35,22 +35,10 @@ export default class Api{
             }
         });
 
-        return await res.json();
-    }
-
-    async getTaskList(from, to) {
-        await this.auth(this.user).then(res => {
-            this.token = res.accessToken
-        });
-
-        let res = await fetch(this.apiHost + `task/getTaskList?from=${from}&to=${to}`, {
-            method: 'GET',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': this.token
-            }
-        });
-
-        return await res.json();
+        if (res.ok) {
+            return await res.json();
+        } else {
+            throw('request error');
+        }
     }
 }
