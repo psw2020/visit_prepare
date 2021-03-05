@@ -2,6 +2,7 @@ import {app, BrowserWindow, screen, Tray, ipcMain} from 'electron';
 import path from "path";
 import icon from 'trayTemplate.png';
 import Api from './api';
+import {DateTime} from 'luxon';
 
 
 export default class VisitPrepare {
@@ -9,6 +10,7 @@ export default class VisitPrepare {
         this.tray = true;
         this.win = null;
         this.api = new Api();
+        this.dateTime = DateTime;
         this.subscribeForIPC();
         this.lock = app.requestSingleInstanceLock();
         app.whenReady().then(() => this.createWindow());
@@ -69,19 +71,21 @@ export default class VisitPrepare {
         ipcMain.on('getTaskList', () => {
             const from = 0;
             const to = 0;
-            this.api.req(`task/getTaskList?from=${from}&to=${to}`)
+            this.api.req(`task/taskList?from=${from}&to=${to}`)
                 .then(res => this.window.webContents.send('taskList', res))
                 .catch(() => this.window.webContents.send('getTaskListErr'));
         });
 
         ipcMain.on('getOrderInfo', async (_, data) => {
-            let contact = await this.api.req(`contact/getContact?id=${data.contact}`);
-            let client = await this.api.req(`client/getBaseInfo/${data.clid}`);
-            let orderList = await this.api.req(`order/getOrderListFromClient?id=${data.clid}`);
-            console.log(client);
-
-
-        })
+            const contact = await this.api.req(`contact/contact?id=${data.contact}`);
+            const client = await this.api.req(`client/baseInfo?id=${data.clid}`);
+            const orderList = await this.api.req(`order/orderListFromClient?id=${data.clid}`);
+            const paymentSum = await this.api.req(`client/paymentSum?id=${data.clid}`);
+            const ownPartPercent = await this.api.req(`client/ownPartsPercent?id=${data.clid}`);
+            const firstVisit = this.dateTime.fromISO(orderList[orderList.length - 1]['DATETIME']).toFormat('dd.LL.yyyy');
+            const middleCheck = Math.round(paymentSum[0]['VALUE'] / orderList.length);
+            console.log(ownPartPercent);
+        });
 
 
     }
