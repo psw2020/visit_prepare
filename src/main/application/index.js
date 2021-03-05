@@ -68,7 +68,7 @@ export default class VisitPrepare {
     }
 
     subscribeForIPC() {
-        ipcMain.on('getTaskList', () => {
+        ipcMain.on('getTaskList', () => { //Запрос списка заданий
             const from = 0;
             const to = 0;
             this.api.req(`task/taskList?from=${from}&to=${to}`)
@@ -76,12 +76,13 @@ export default class VisitPrepare {
                 .catch(() => this.window.webContents.send('getTaskListErr'));
         });
 
-        ipcMain.on('getOrderInfo', async (_, data) => {
+        ipcMain.on('getOrderInfo', async (_, data) => { //Формирования объекта подробностей задания
             const contact = await this.api.req(`contact/contact?id=${data.contact}`);
             const client = await this.api.req(`client/baseInfo?id=${data.clid}`);
             const orderList = await this.api.req(`order/orderListFromClient?id=${data.clid}`);
             const paymentSum = await this.api.req(`client/paymentSum?id=${data.clid}`);
             const ownPartPercent = await this.api.req(`client/ownPartsPercent?id=${data.clid}`);
+
             const firstVisit = this.dateTime.fromISO(orderList[orderList.length - 1]['DATETIME']).toFormat('dd.LL.yyyy');
             const middleCheck = Math.round(paymentSum[0]['VALUE'] / orderList.length);
             console.log(ownPartPercent);
