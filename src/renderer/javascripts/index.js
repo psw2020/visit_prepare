@@ -1,8 +1,10 @@
 require('bootstrap.min.css');
 require('application.css');
 
+window.cache = {};
+
 window.onload = () => {
-    window.getTaskList();
+    window.getEmployeeList();
 }
 
 window.createTaskList = (arr) => {
@@ -15,7 +17,7 @@ window.createTaskList = (arr) => {
 
     arr.forEach(v => {
         str += `
-          <div class="taskListItem" data-doh="${v.doh}" data-clid="${v.clid}" data-contact="${v.contact}">
+          <div class="taskListItem" data-docid="${v.docid}" data-clid="${v.clid}" data-contact="${v.contact}" data-docplid="${v.docplid}">
             <p class="date">${v.date}</p>
             <p class="model">${v.mark} ${v.model}</p>
             <p class="gosnumber">${v.regno}</p>
@@ -23,13 +25,17 @@ window.createTaskList = (arr) => {
   `;
     });
 
-    document.getElementsByClassName('taskList')[0].innerHTML = str;
+    document.getElementById('taskList').innerHTML = str;
     let items = document.querySelectorAll('.taskListItem');
 
     items.forEach(v => v.addEventListener('click', () => {
-        getOrderInfo(v.dataset.doh, v.dataset.clid, v.dataset.contact);
+        getOrderInfo(v.dataset.docid, v.dataset.clid, v.dataset.contact, v.dataset.docplid);
     }))
 
+}
+
+window.createFullOrder = (str) =>{
+    document.getElementById('workArea').innerHTML = str;
 }
 
 window.getTaskListErr = () => {

@@ -23,7 +23,7 @@ export default class Api{
         }
     }
 
-    async req(url) {
+    async get(url) {
         await this.auth(this.user).then(res => {
             this.token = res.accessToken
         });
@@ -39,7 +39,7 @@ export default class Api{
         if (res.ok) {
             return await res.json();
         } else {
-            throw('request error');
+            throw(`request error ${res.status}`);
         }
     }
 }
