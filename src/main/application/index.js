@@ -70,8 +70,7 @@ export default class VisitPrepare {
 
     subscribeForIPC() {
         ipcMain.on('getEmployeeList', () => {
-            const id = 3; //Механики
-            this.api.get(`employee/employeeList?id=${id}`)
+            this.api.get(`employee/employeeList`)
                 .then(res => this.window.webContents.send('employeeList', res))
                 .catch(() => this.window.webContents.send('getEmployeeListErr'));
         })
@@ -114,8 +113,6 @@ export default class VisitPrepare {
                 this.cache[data.docplid] = obj;
             }
 
-
-            console.log(obj);
             this.window.webContents.send('getOrderInfo',obj);
         });
 

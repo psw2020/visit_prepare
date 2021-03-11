@@ -1,44 +1,27 @@
 import {DateTime} from "luxon";
 
 const orderHelpers = {
-    taskListObjClear(arr) {
-        let a = [];
-        arr.forEach(v => {
-            let {
-                DOCUMENT_PLANNING_ID: docplid,
-                DATE_START: date,
-                DOCUMENT_OUT_ID: docid,
-                MARK: mark,
-                MODEL: model,
-                REGNO: regno,
-                CLIENT_ID: clid,
-                CLIENT_CONTACT_ID: contact
-            } = v;
-            let dateFormat = DateTime.fromISO(date).toFormat('dd.LL HH:mm');
-            a.push({date: dateFormat, docid, mark, model, regno, clid, contact, docplid});
-        });
-        return a;
-    },
-
-    renderFullOrder(obj, employee) {
+      renderFullOrder(obj, employee) {
         const o = fullOrderObjClear(obj);
         return `<h3>Общая информация</h3>
         <p>${o.name}</p>
         <p>Телефон: ${o.phone}</p>
         <p>С нами с ${o.visit}</p>
+        <p>Платежей: ${o.payments}</p>
         <p>Средний чек: ${o.check}р</p>
         <p>Своих запчастей: ${o.ownParts}%</p>
 
         <h3>Бонусная программа</h3>
         <p>Доступно бонусов: ${o.bonus}</p>
-        <p>Ближайшее сгорание: ${o.burnSum} бонусов ${o.burnDate}</p>
+        <p>Ближайшее сгорание: ${(o.burnSum) ? `${o.burnSum} бонусов ${o.burnDate}` : `-`}</p>
 
         <h3>Наличие запчастей</h3>
         <div class="partsList">
         ${createPartList(o.workList, employee)}
         </div>
+        
         <h3>Обязательно предложить</h3>
-        <label><input type="text" id="recommendation" value="${o.offerText}"></label>
+        <label><input type="text" id="recommendation" value="${(o.offerText) ? `${o.offerText}` : ``}"></label>
 
         <div class="buttons">
             <button class="btn-light">Сохранить</button>
@@ -49,14 +32,20 @@ const orderHelpers = {
 
 function createPartList(arr, employee) {
     let str = ``;
-    const employeeList = createEmployeeOptions(employee);
+
     for (let i = 0; i < arr.length; i++) {
-        str += `   <div class="item">
-        <div class="workName">${arr[i]['NAME']}</div>
-        <div class="input"><label><input type="checkbox" data-employee="${arr[i]['EMPLOYEE_ID']}" data-swid="${arr[i]['SERVICE_WORK_ID']}"/></label></div>
+
+        const employeeList = createEmployeeOptions(employee, arr[i]['EMPLOYEE_ID']);
+        const checked = (+arr[i]['VISIT_PREPARE_READY']) ? 'checked' : '';
+
+        str += `<div class="item">
+            <div class="workName">${arr[i]['NAME']}</div>
+        <div class="input">
+        <label><input type="checkbox" ${checked} id="${arr[i]['SERVICE_WORK_ID']}" class="workCheck" data-employee="${arr[i]['EMPLOYEE_ID']}" data-swid="${arr[i]['SERVICE_WORK_ID']}"/></label>
+        </div>
         <div class="employee">
             <label>
-                <select name="employee" id="">
+                <select name="employee" id="${arr[i]['SERVICE_WORK_ID']}" data-swid="${arr[i]['SERVICE_WORK_ID']}" class="employeeSelect">
                     ${employeeList};
                 </select>
             </label>
@@ -67,21 +56,25 @@ function createPartList(arr, employee) {
     return str;
 }
 
-function createEmployeeOptions(arr) {
-    let str = ``;
+function createEmployeeOptions(arr, id) {
+    let str = `<option value=""></option>`;
 
     for (let i = 0; i < arr.length; i++) {
-        str += `<option value="${arr[i]['EMPLOYEE_ID']}">${arr[i]['SHORTNAME']}</option>`;
+        const selected = (arr[i]['EMPLOYEE_ID'] === id) ? 'selected' : '';
+        str += `<option ${selected} value="${arr[i]['EMPLOYEE_ID']}">${arr[i]['SHORTNAME']}</option>`;
     }
 
     return str;
 }
 
 function fullOrderObjClear(obj) {
+    let burnDate = (obj.bonusFirstBurnDate) ? DateTime.fromISO(obj.bonusFirstBurnDate.delete_date).toFormat('dd.LL.yyyy') : null;
+    let burnSum = (obj.bonusFirstBurnDate) ? toClearInt(obj.bonusFirstBurnDate.sum) : null;
+
     return {
-        bonus: toClearInt(obj.bonusBalance),
-        burnDate: DateTime.fromISO(obj.bonusFirstBurnDate.delete_date).toFormat('dd.LL.yyyy'),
-        burnSum: toClearInt(obj.bonusFirstBurnDate.sum),
+        bonus: toClearInt(+obj.bonusBalance),
+        burnDate: burnDate,
+        burnSum: burnSum,
         name: obj.client['SHORTNAME'],
         phone: obj.contact['MOBILE'] || obj.contact['PHONE'],
         visit: obj.firstVisit,
