@@ -1,7 +1,7 @@
 import {DateTime} from "luxon";
 
 const orderHelpers = {
-      renderFullOrder(obj, employee) {
+    renderFullOrder(obj, employee) {
         const o = fullOrderObjClear(obj);
         return `<h3>Общая информация</h3>
         <p>${o.name}</p>
@@ -21,11 +21,11 @@ const orderHelpers = {
         </div>
         
         <h3>Обязательно предложить</h3>
-        <label><input type="text" id="recommendation" value="${(o.offerText) ? `${o.offerText}` : ``}"></label>
+        <label><input type="text" data-docregisid="${o.docRegId}" id="recommendation" value="${(o.offerText) ? `${o.offerText}` : ``}"></label>
 
-        <div class="buttons">
-            <button class="btn-light">Сохранить</button>
-            <button class="btn-light">Оформить</button>
+        <div class="buttons" data-docplan="${o.docPlan}">
+            <button id="save" class="btn-light">Сохранить</button>
+            <button id="confirm" class="btn-light">Оформить</button>
         </div>`;
     }
 }
@@ -57,7 +57,7 @@ function createPartList(arr, employee) {
 }
 
 function createEmployeeOptions(arr, id) {
-    let str = `<option value=""></option>`;
+    let str = `<option value="null"></option>`;
 
     for (let i = 0; i < arr.length; i++) {
         const selected = (arr[i]['EMPLOYEE_ID'] === id) ? 'selected' : '';
@@ -85,7 +85,8 @@ function fullOrderObjClear(obj) {
         docRegId: obj.orderBaseInfo['DOCUMENT_REGISTRY_ID'],
         offerText: obj.orderBaseInfo['OFFER'],
         bonusText: obj.orderBaseInfo['BONUS_INFO'],
-        check: toClearInt(obj.middleCheck)
+        check: toClearInt(obj.middleCheck),
+        docPlan: obj.docPlan
 
     };
 }

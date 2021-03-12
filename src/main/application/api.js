@@ -42,4 +42,25 @@ export default class Api{
             throw(`request error ${res.status}`);
         }
     }
+
+    async put(url, body ={}) {
+        await this.auth(this.user).then(res => {
+            this.token = res.accessToken
+        });
+
+        let res = await fetch(this.apiHost + url, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': this.token
+            },
+            body: JSON.stringify(body)
+        });
+
+        if (res.ok) {
+            return await res.json();
+        } else {
+            throw(`request error ${res.status}`);
+        }
+    }
 }

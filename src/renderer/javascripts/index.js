@@ -12,10 +12,10 @@ window.createFullOrder = (str) => { //Вставить html в workArea
 }
 
 window.getTaskListErr = () => { //Ошибка получения списка заданий
-    newMessage('Не удалось загрузить список заданий :(','danger');
+    newMessage('Не удалось загрузить список заданий :(', 'danger');
 }
 
-window.newMessage = (str, type="primary") => {
+window.newMessage = (str, type = "primary") => {
     const el = document.getElementById('alert');
     el.innerHTML = `<div class="alert alert-${type} taskListError" role="alert">${str}</div>`;
     setTimeout(() => {
@@ -32,10 +32,9 @@ window.loaderShow = () => {
 </div>`;
 }
 
-window.addEventForPartItem = () => {
-    for (let v of document.getElementsByClassName('workCheck')) {
-        v.addEventListener('click', () => window.setReadyWork(v.dataset.swid, v.att, v.dataset.employee))
-    }
+window.addEventForButton = () => {
+    document.getElementById('save').addEventListener('click', () => window.saveOrder());
+    document.getElementById('confirm').addEventListener('click', () => window.saveOrder(1));
 }
 
 window.addEventForTaskList = () => {
@@ -45,20 +44,69 @@ window.addEventForTaskList = () => {
             if (+v.dataset.docid) {
                 v.addEventListener('click', () => getOrderInfo(v.dataset.docid, v.dataset.clid, v.dataset.contact, v.dataset.docplid));
             } else {
-                v.addEventListener('click', () => newMessage('К заданию не привязан заказ наряд','warning'));
+                v.addEventListener('click', () => newMessage('К заданию не привязан заказ наряд', 'warning'));
             }
         }
     )
 }
 
-window.save = ()=>{
-    let obj = {};
-    for (let v of document.getElementsByClassName('workCheck')) {
-        obj[v.dataset.swid] = {};
-        obj[v.dataset.swid]['ready'] = +v.checked;
+window.saveOrder = (confirm = null) => {
+    let obj = {}
+    if (confirm) {
+        if (checkWorkList()) {
+            obj.confirm = true;
+        } else {
+            return;
+        }
+    } else {
+        obj.confirm = false;
     }
-    for(let v of document.getElementsByClassName('employeeSelect')){
-        obj[v.dataset.swid]['employee'] = v.value;
+
+    obj.workListCheck = createWorkListCheckArr();
+    obj.docRegId = document.getElementById('recommendation').dataset.docregisid;
+    obj.docPlan = document.getElementsByClassName('buttons')[0].dataset.docplan;
+    obj.recommendation = document.getElementById('recommendation').value;
+    window.sendOrderData(obj);
+}
+
+
+function checkWorkList() {
+    const workReadyList = document.getElementsByClassName('workCheck');
+    const employeeList = document.getElementsByClassName('employeeSelect');
+    const recommendation = document.getElementById('recommendation').value;
+
+    for (let i = 0; i < workReadyList.length; i++) {
+        let check = workReadyList[i].checked;
+        let employee = employeeList[i].value;
+
+        if (!check) {
+            newMessage('Подтвердите возможноость выполнения всех работ!', 'warning');
+            return false;
+        } else if (!employee) {
+            newMessage('Назначьте исполнителей на все работы!', 'warning');
+            return false
+        }
     }
-    return obj;
+
+    if (!recommendation) {
+        newMessage('Впишите обязательную рекомендацию для клиента!', 'warning');
+        return false;
+    }
+
+    return true;
+}
+
+function createWorkListCheckArr() {
+    let arr = [];
+    const workReadyList = document.getElementsByClassName('workCheck');
+    const employeeList = document.getElementsByClassName('employeeSelect');
+
+    for (let i = 0; i < workReadyList.length; i++) {
+        arr.push({
+            workId: workReadyList[i].dataset.swid,
+            ready: +workReadyList[i].checked,
+            employee: employeeList[i].value
+        });
+    }
+    return arr;
 }

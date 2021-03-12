@@ -8,8 +8,9 @@ const taskListHelpers = {
 
         arr.forEach(v => {
             let cl = (v.docid) ? '' : 'disabled';
+            let complete = (+v.taskMark === 11) ? 'complete' : '';
             str += `
-          <div class="taskListItem ${cl}" data-docid="${v.docid}" data-clid="${v.clid}" data-contact="${v.contact}" data-docplid="${v.docplid}">
+          <div class="taskListItem ${cl} ${complete}" data-complete="${complete}" data-docid="${v.docid}" data-clid="${v.clid}" data-contact="${v.contact}" data-docplid="${v.docplid}">
             <p class="date">${v.date}</p>
             <p class="model">${v.mark} ${v.model}</p>
             <p class="gosnumber">${v.regno}</p>
@@ -33,10 +34,11 @@ function taskListObjClear(arr) {
             MODEL: model,
             REGNO: regno,
             CLIENT_ID: clid,
-            CLIENT_CONTACT_ID: contact
+            CLIENT_CONTACT_ID: contact,
+            DP_MARK: taskMark
         } = v;
         let dateFormat = DateTime.fromISO(date).toFormat('dd.LL HH:mm');
-        a.push({date: dateFormat, docid, mark, model, regno, clid, contact, docplid});
+        a.push({date: dateFormat, docid, mark, model, regno, clid, contact, docplid, taskMark});
     });
     return a;
 }

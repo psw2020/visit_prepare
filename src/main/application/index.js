@@ -1,9 +1,8 @@
-import {app, BrowserWindow, screen, Tray, ipcMain} from 'electron';
+import {app, BrowserWindow, screen, Tray, ipcMain, Menu} from 'electron';
 import path from "path";
 import icon from 'trayTemplate.png';
 import Api from './api';
 import {DateTime} from 'luxon';
-
 
 export default class VisitPrepare {
     constructor() {
@@ -18,6 +17,7 @@ export default class VisitPrepare {
     }
 
     createWindow() {
+        this.createMenu();
         if (!this.lock) {
             app.quit();
         } else {
@@ -29,6 +29,8 @@ export default class VisitPrepare {
                 }
             });*/
         }
+
+
         const {width, height} = screen.getPrimaryDisplay().workAreaSize;
         this.window = new BrowserWindow({
             width: 1024,
@@ -40,7 +42,7 @@ export default class VisitPrepare {
             show: false,
             title: 'Подготовка к визиту',
             titleBarStyle: 'hidden',
-            autoHideMenuBar: true,
+            autoHideMenuBar: false,
             backgroundColor: '#2980b9',
             closable: true,
             webPreferences: {
@@ -68,55 +70,119 @@ export default class VisitPrepare {
 
     }
 
-    subscribeForIPC() {
-        ipcMain.on('getEmployeeList', () => {
+    clearCache() { //Очистка кеша
+        this.cache = {};
+    }
+
+    createMenu() { //Создание главного меню
+        const refresh = () => {
+            this.getTaskList();
+        }
+        const cache = () => this.clearCache();
+
+        const mainMenu = [
+            {
+                label: 'Обновить список задач',
+                click() {
+                    refresh();
+                }
+            },
+            {
+                label: 'Обновить основную информацию о клиенте',
+                click() {
+                    cache();
+                    refresh();
+                }
+            },
+        ]
+        const menu = new Menu.buildFromTemplate(mainMenu);
+        Menu.setApplicationMenu(menu);
+    }
+
+    getTaskList() { //Запрос списка заданий
+        const from = 0;
+        const to = 0;
+        this.api.get(`task/taskList?from=${from}&to=${to}`)
+            .then(res => this.window.webContents.send('taskList', res))
+            .catch(() => this.window.webContents.send('getTaskListErr'));
+    }
+
+    subscribeForIPC() { //Подписка на сообщения с рендер процесса
+
+        ipcMain.on('getEmployeeList', () => { //Список исполнителей
             this.api.get(`employee/employeeList`)
                 .then(res => this.window.webContents.send('employeeList', res))
                 .catch(() => this.window.webContents.send('getEmployeeListErr'));
         })
 
-        ipcMain.on('getTaskList', () => { //Запрос списка заданий
-            const from = 0;
-            const to = 0;
-            this.api.get(`task/taskList?from=${from}&to=${to}`)
-                .then(res => this.window.webContents.send('taskList', res))
-                .catch(() => this.window.webContents.send('getTaskListErr'));
+
+        ipcMain.on('getTaskList', () => { //Спискок заданий
+            this.getTaskList();
         });
 
         ipcMain.on('getOrderInfo', async (_, data) => { //Формирования объекта подробностей задания
-
-            let obj;
-            const orderList = await this.api.get(`order/orderListFromClient?id=${data.clid}`);
-            const orderWorkList = await this.api.get(`order/orderWorkList?id=${data.docid}`);
-            const orderBaseInfo = (await this.api.get(`order/orderBaseInfo?id=${data.docid}`))[0];
-
-
-            if (this.cache.hasOwnProperty(data.docplid)) {
-                obj = this.cache[data.docplid];
-                obj.orderWorkList = orderWorkList;
-                obj.orderBaseInfo = orderBaseInfo;
-            } else {
-                obj = {
-                    contact: (await this.api.get(`contact/contact?id=${data.contact}`))[0],
-                    client: (await this.api.get(`client/baseInfo?id=${data.clid}`))[0],
-                    orderWorkList,
-                    orderBaseInfo,
-                    paymentSum: (await this.api.get(`client/paymentSum?id=${data.clid}`))[0]['VAL'],
-                    ownPartPercent: (await this.api.get(`client/ownPartsPercent?id=${data.clid}`))['VAL'],
-                    bonusBalance: (await this.api.get(`client/bonusBalance?id=${data.clid}`))[0]['val'],
-                    bonusFirstBurnDate: (await this.api.get(`client/bonusFirstBurnDate?id=${data.clid}`))[0],
-                    firstVisit: this.dateTime.fromISO(orderList[orderList.length - 1]['DATETIME']).toFormat('dd.LL.yyyy')
-                }
-
-                obj.middleCheck = Math.round(obj.paymentSum / orderList.length);
-
-                this.cache[data.docplid] = obj;
-            }
-
-            this.window.webContents.send('getOrderInfo',obj);
+            const obj = await this.createOrderObj(data);
+            this.window.webContents.send('getOrderInfo', obj);
         });
 
+        ipcMain.on('saveOrder', async (_, data) => {
+            await this.saveOrder(data);
+        })
 
     }
+
+    async saveOrder(data) {
+        console.log(data);
+        const err = () => {
+            this.window.webContents.send('saveOrderError');
+        }
+
+        try {
+
+            if (data.confirm) {
+                await this.api.put(`task/updateTaskMark?docpl=${data.docPlan}&mark=11`);
+            }
+
+            await this.api.put(`order/updateRequiredRecommendation`, {docreg: data.docRegId, str: data.recommendation});
+
+            for (let v of data.workListCheck) {
+                await this.api.put(`employee/setEmployeeOnWork?workid=${v.workId}&employee=${v.employee}&ready=${v.ready}`);
+            }
+        } catch (e) {
+            err();
+            return;
+        }
+
+        this.window.webContents.send('saveOrderComplete');
+    }
+
+    async createOrderObj(data) { //Создание объекта полного заказа
+        let obj;
+        const orderList = await this.api.get(`order/orderListFromClient?id=${data.clid}`);
+        const orderWorkList = await this.api.get(`order/orderWorkList?id=${data.docid}`);
+        const orderBaseInfo = (await this.api.get(`order/orderBaseInfo?id=${data.docid}`))[0];
+        if (this.cache.hasOwnProperty(data.docplid)) {
+            obj = this.cache[data.docplid];
+            obj.orderWorkList = orderWorkList;
+            obj.orderBaseInfo = orderBaseInfo;
+        } else {
+            obj = {
+                contact: (await this.api.get(`contact/contact?id=${data.contact}`))[0],
+                client: (await this.api.get(`client/baseInfo?id=${data.clid}`))[0],
+                orderWorkList,
+                orderBaseInfo,
+                paymentSum: (await this.api.get(`client/paymentSum?id=${data.clid}`))[0]['VAL'],
+                ownPartPercent: (await this.api.get(`client/ownPartsPercent?id=${data.clid}`))['VAL'],
+                bonusBalance: (await this.api.get(`client/bonusBalance?id=${data.clid}`))[0]['val'],
+                bonusFirstBurnDate: (await this.api.get(`client/bonusFirstBurnDate?id=${data.clid}`))[0],
+                firstVisit: this.dateTime.fromISO(orderList[orderList.length - 1]['DATETIME']).toFormat('dd.LL.yyyy'),
+                docPlan: data.docplid
+            }
+        }
+        obj.middleCheck = Math.round(obj.paymentSum / orderList.length);
+        this.cache[data.docplid] = obj;
+        return obj;
+    }
+
 
 }

@@ -46,6 +46,8 @@ body {
 .taskListItem.disabled{background-color: #5a6268;border: 1px solid #5a6268;}
 .taskListItem.disabled:hover{background-color: #5a6268;cursor: not-allowed;border-color: #5a6268}
 
+.taskListItem.complete{background-color: #6bff8c;color: black;}
+
 .taskListItem:hover{
   background-color: #005cbf;
   transition: background-color .5s ease;
