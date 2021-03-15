@@ -41,8 +41,10 @@ window.addEventForTaskList = () => {
     let items = document.querySelectorAll('.taskListItem');
 
     items.forEach(v => {
-            if (+v.dataset.docid) {
+            if (+v.dataset.docid && +v.dataset.clid) {
                 v.addEventListener('click', () => getOrderInfo(v.dataset.docid, v.dataset.clid, v.dataset.contact, v.dataset.docplid));
+            } else if (!+v.dataset.clid) {
+                v.addEventListener('click', () => newMessage('Заданию не назначен клиент', 'warning'));
             } else {
                 v.addEventListener('click', () => newMessage('К заданию не привязан заказ наряд', 'warning'));
             }
@@ -82,7 +84,7 @@ function checkWorkList() {
         if (!check) {
             newMessage('Подтвердите возможноость выполнения всех работ!', 'warning');
             return false;
-        } else if (!employee) {
+        } else if (isNaN(employee)) {
             newMessage('Назначьте исполнителей на все работы!', 'warning');
             return false
         }

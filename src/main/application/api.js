@@ -4,7 +4,9 @@ import user from '../../../private/api';
 export default class Api{
     constructor() {
         this.user = user;
-        this.apiHost = 'http://172.16.1.20:3010/';
+        this.localhost = 'http://127.0.0.1:3010/';
+        this.deployhost = 'http://172.16.1.20:3010/';
+        this.apiHost = this.deployhost;
         this.token = '';
     }
 
@@ -39,7 +41,7 @@ export default class Api{
         if (res.ok) {
             return await res.json();
         } else {
-            throw(`request error ${res.status}`);
+            throw(`"${url}" request error ${res.status}`);
         }
     }
 
@@ -60,7 +62,7 @@ export default class Api{
         if (res.ok) {
             return await res.json();
         } else {
-            throw(`request error ${res.status}`);
+            throw(`"${url}" request error ${res.status}`);
         }
     }
 }

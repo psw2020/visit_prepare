@@ -25,6 +25,7 @@ export default class VisitPrepare {
 
                 app.focus();
                 if (this.window) {
+                    this.window.show();
                     this.window.focus();
                 }
             });
@@ -69,7 +70,7 @@ export default class VisitPrepare {
             this.window = null;
         })
 
-        this.window.on('minimize',()=>{
+        this.window.on('minimize', () => {
             this.window.hide();
         })
 
@@ -106,7 +107,7 @@ export default class VisitPrepare {
 
     getTaskList() { //Запрос списка заданий
         const from = 0;
-        const to = 0;
+        const to = 1;
         this.api.get(`task/taskList?from=${from}&to=${to}`)
             .then(res => this.window.webContents.send('taskList', res))
             .catch(() => this.window.webContents.send('getTaskListErr'));
@@ -141,7 +142,6 @@ export default class VisitPrepare {
     }
 
     async saveOrder(data) {
-        console.log(data);
         let obj = {};
         const err = () => {
             this.window.webContents.send('saveOrderError');
@@ -164,35 +164,40 @@ export default class VisitPrepare {
             return;
         }
 
-        this.window.webContents.send('saveOrderComplete',obj);
+        this.window.webContents.send('saveOrderComplete', obj);
     }
 
     async createOrderObj(data) { //Создание объекта полного заказа
-        let obj;
-        const orderList = await this.api.get(`order/orderListFromClient?id=${data.clid}`);
-        const orderWorkList = await this.api.get(`order/orderWorkList?id=${data.docid}`);
-        const orderBaseInfo = (await this.api.get(`order/orderBaseInfo?id=${data.docid}`))[0];
-        if (this.cache.hasOwnProperty(data.docplid)) {
-            obj = this.cache[data.docplid];
-            obj.orderWorkList = orderWorkList;
-            obj.orderBaseInfo = orderBaseInfo;
-        } else {
-            obj = {
-                contact: (await this.api.get(`contact/contact?id=${data.contact}`))[0],
-                client: (await this.api.get(`client/baseInfo?id=${data.clid}`))[0],
-                orderWorkList,
-                orderBaseInfo,
-                paymentSum: (await this.api.get(`client/paymentSum?id=${data.clid}`))[0]['VAL'],
-                ownPartPercent: (await this.api.get(`client/ownPartsPercent?id=${data.clid}`))['VAL'],
-                bonusBalance: (await this.api.get(`client/bonusBalance?id=${data.clid}`))[0]['val'],
-                bonusFirstBurnDate: (await this.api.get(`client/bonusFirstBurnDate?id=${data.clid}`))[0],
-                firstVisit: this.dateTime.fromISO(orderList[orderList.length - 1]['DATETIME']).toFormat('dd.LL.yyyy'),
-                docPlan: data.docplid
+        try {
+            let obj;
+            const orderList = await this.api.get(`order/orderListFromClient?id=${data.clid}`);
+            const orderWorkList = await this.api.get(`order/orderWorkList?id=${data.docid}`);
+            const orderBaseInfo = (await this.api.get(`order/orderBaseInfo?id=${data.docid}`))[0];
+            if (this.cache.hasOwnProperty(data.docplid)) {
+                obj = this.cache[data.docplid];
+                obj.orderWorkList = orderWorkList;
+                obj.orderBaseInfo = orderBaseInfo;
+            } else {
+                obj = {
+                    contact: (await this.api.get(`contact/contact?id=${data.contact}`))[0],
+                    client: (await this.api.get(`client/baseInfo?id=${data.clid}`))[0],
+                    orderWorkList,
+                    orderBaseInfo,
+                    paymentSum: (await this.api.get(`client/paymentSum?id=${data.clid}`))[0]['VAL'],
+                    ownPartPercent: (await this.api.get(`client/ownPartsPercent?id=${data.clid}`))['VAL'],
+                    bonusBalance: (await this.api.get(`client/bonusBalance?id=${data.clid}`))[0]['val'],
+                    bonusFirstBurnDate: (await this.api.get(`client/bonusFirstBurnDate?id=${data.clid}`))[0],
+                    firstVisit: this.dateTime.fromISO(orderList[orderList.length - 1]['DATETIME']).toFormat('dd.LL.yyyy'),
+                    docPlan: data.docplid
+
+                }
             }
+            obj.middleCheck = Math.round(obj.paymentSum / orderList.length);
+            this.cache[data.docplid] = obj;
+            return obj;
+        } catch (e) {
+            console.log(e);
         }
-        obj.middleCheck = Math.round(obj.paymentSum / orderList.length);
-        this.cache[data.docplid] = obj;
-        return obj;
     }
 
 

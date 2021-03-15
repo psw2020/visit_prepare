@@ -36,7 +36,6 @@ ipcRenderer.on('employeeList', (_, data) => { //Запись исполните�
 ipcRenderer.on('getEmployeeListErr', () => { //Если вернулась ошибка
     newMessage('Ошибка соединения с сервером', 'danger');
     document.getElementById('taskList').innerHTML = '';
-    console.log('getEmployeeListErr');
 })
 
 /*Заказ наряд*/
