@@ -50,9 +50,10 @@ export default class VisitPrepare {
             }
         })
         this.window.loadFile('renderer/index.html');
-        this.window.webContents.openDevTools({mode: 'detach'});
+        //this.window.webContents.openDevTools({mode: 'detach'});
 
         this.tray = new Tray(path.resolve(__dirname, icon));
+        this.tray.setToolTip('Подготовка к визиту');
         this.tray.on("double-click", () => {
             this.window.isVisible() ? this.window.hide() : this.window.show();
         })
@@ -66,6 +67,10 @@ export default class VisitPrepare {
 
         this.window.on('closed', () => {
             this.window = null;
+        })
+
+        this.window.on('minimize',()=>{
+            this.window.hide();
         })
 
     }
