@@ -4,7 +4,7 @@ import user from '../../../private/api';
 export default class Api{
     constructor() {
         this.user = user;
-        this.apiHost = 'http://127.0.0.1:3010/';
+        this.apiHost = 'http://172.16.1.20:3010/';
         this.token = '';
     }
 

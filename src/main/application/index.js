@@ -1,13 +1,13 @@
 import {app, BrowserWindow, screen, Tray, ipcMain, Menu} from 'electron';
 import path from "path";
-import icon from 'trayTemplate.png';
+import icon from 'tray_16.png';
 import Api from './api';
 import {DateTime} from 'luxon';
 
 export default class VisitPrepare {
     constructor() {
         this.tray = true;
-        this.win = null;
+        this.win = BrowserWindow.getAllWindows().length;
         this.api = new Api();
         this.cache = {};
         this.dateTime = DateTime;
@@ -21,20 +21,20 @@ export default class VisitPrepare {
         if (!this.lock) {
             app.quit();
         } else {
-            /*app.on('second-instance', () => { проверка количества окон, блокировка запуска
+            app.on('second-instance', () => {
 
                 app.focus();
-                if (win) {
-                    win.focus();
+                if (this.window) {
+                    this.window.focus();
                 }
-            });*/
+            });
         }
 
 
         const {width, height} = screen.getPrimaryDisplay().workAreaSize;
         this.window = new BrowserWindow({
             width: 1024,
-            height: 600,
+            height: 800,
             minWidth: Math.round(width / 3),
             minHeight: Math.round(height / 3),
             maxWidth: width,
@@ -42,9 +42,9 @@ export default class VisitPrepare {
             show: false,
             title: 'Подготовка к визиту',
             titleBarStyle: 'hidden',
-            autoHideMenuBar: false,
+            autoHideMenuBar: true,
             backgroundColor: '#2980b9',
-            closable: true,
+            closable: false,
             webPreferences: {
                 preload: path.join(app.getAppPath(), 'preload', 'index.js')
             }
@@ -111,7 +111,11 @@ export default class VisitPrepare {
 
         ipcMain.on('getEmployeeList', () => { //Список исполнителей
             this.api.get(`employee/employeeList`)
-                .then(res => this.window.webContents.send('employeeList', res))
+                .then(res => {
+                    this.window.webContents.send('employeeList', res);
+                    this.window.autoHideMenuBar = false;
+                    this.window.menuBarVisible = true;
+                })
                 .catch(() => this.window.webContents.send('getEmployeeListErr'));
         })
 
@@ -133,6 +137,7 @@ export default class VisitPrepare {
 
     async saveOrder(data) {
         console.log(data);
+        let obj = {};
         const err = () => {
             this.window.webContents.send('saveOrderError');
         }
@@ -141,6 +146,7 @@ export default class VisitPrepare {
 
             if (data.confirm) {
                 await this.api.put(`task/updateTaskMark?docpl=${data.docPlan}&mark=11`);
+                obj.ok = true;
             }
 
             await this.api.put(`order/updateRequiredRecommendation`, {docreg: data.docRegId, str: data.recommendation});
@@ -153,7 +159,7 @@ export default class VisitPrepare {
             return;
         }
 
-        this.window.webContents.send('saveOrderComplete');
+        this.window.webContents.send('saveOrderComplete',obj);
     }
 
     async createOrderObj(data) { //Создание объекта полного заказа

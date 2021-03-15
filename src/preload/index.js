@@ -14,6 +14,7 @@ ipcRenderer.on('taskList', (_, data) => { //Построение списка и
         return;
     }
     document.getElementById('taskList').innerHTML = taskListHelpers.createTaskList(data);
+    document.getElementById('workArea').innerHTML = `<h2>Выберите задание</h2>`;
     window.addEventForTaskList();
 
 });
@@ -34,6 +35,7 @@ ipcRenderer.on('employeeList', (_, data) => { //Запись исполните�
 
 ipcRenderer.on('getEmployeeListErr', () => { //Если вернулась ошибка
     newMessage('Ошибка соединения с сервером', 'danger');
+    document.getElementById('taskList').innerHTML = '';
     console.log('getEmployeeListErr');
 })
 
@@ -52,13 +54,19 @@ ipcRenderer.on('getOrderInfo', (_, data) => { //Вывод полной инфы
 /*Сохранение*/
 
 window.sendOrderData = (obj) => {
-    ipcRenderer.send('saveOrder',obj);
+    ipcRenderer.send('saveOrder', obj);
 }
 
-ipcRenderer.on('saveOrderError',()=>{
+ipcRenderer.on('saveOrderError', () => {
     newMessage('Ошибка сохранения', 'danger');
 })
 
-ipcRenderer.on('saveOrderComplete',()=>{
-    newMessage('Успешно сохранено', 'success');
+ipcRenderer.on('saveOrderComplete', (_, data) => {
+    if (data.ok) {
+        newMessage('Задание оформлено, выберите следующее', 'success');
+        document.getElementById('workArea').innerHTML = '';
+        window.getTaskList();
+    } else {
+        newMessage('Успешно сохранено', 'success');
+    }
 })
