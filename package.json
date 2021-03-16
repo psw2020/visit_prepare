@@ -3,9 +3,10 @@
   "version": "0.2.2",
   "description": "VisitPrepare application build with Electron",
   "author": "psw2020",
-  "repository": {},
+  "repository": "https://github.com/psw2020/visit_prepare",
   "dependencies": {
     "cross-fetch": "^3.0.6",
+    "electron-builder": "^22.10.5",
     "file-loader": "^6.2.0",
     "luxon": "^1.26.0",
     "node-fetch": "^2.6.1"
@@ -20,13 +21,16 @@
   },
   "build": {
     "appId": "com.electron.visitprepare",
-    "win": {
-      "publish": null
-    },
-    "mac": {
-      "publish": null,
-      "category": "your.app.category.type"
-    }
+    "publish": [
+      {
+        "provider": "github",
+        "private": true,
+        "owner": "psw2020",
+        "repo": "https://github.com/psw2020/visit_prepare",
+        "GH_TOKEN":"cccbcd7917d3cd1cc64e46252e6deeecdd2ff104"
+      }
+    ],
+    "win": {}
   },
   "main": ".eslintrc.js",
   "directories": {
