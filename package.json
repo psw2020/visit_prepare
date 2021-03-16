@@ -7,6 +7,8 @@
   "dependencies": {
     "cross-fetch": "^3.0.6",
     "electron-builder": "^22.10.5",
+    "electron-log": "^4.3.2",
+    "electron-updater": "^4.3.8",
     "file-loader": "^6.2.0",
     "luxon": "^1.26.0",
     "node-fetch": "^2.6.1"
