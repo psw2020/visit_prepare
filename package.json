@@ -26,9 +26,7 @@
         "provider": "github",
         "private": true,
         "owner": "psw2020",
-        "repo": "https://github.com/psw2020/visit_prepare",
-        "GH_TOKEN":"cccbcd7917d3cd1cc64e46252e6deeecdd2ff104"
-      }
+        "repo": "https://github.com/psw2020/visit_prepare"}
     ],
     "win": {}
   },
