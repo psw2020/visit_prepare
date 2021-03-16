@@ -23,10 +23,8 @@
     "appId": "com.electron.visitprepare",
     "publish": [
       {
-        "provider": "github",
-        "private": true,
-        "owner": "psw2020",
-        "repo": "https://github.com/psw2020/visit_prepare"}
+        "provider": "github"
+      }
     ],
     "win": {}
   },
