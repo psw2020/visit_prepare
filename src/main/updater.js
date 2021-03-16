@@ -6,5 +6,5 @@ autoUpdater.logger.transports.file.resolvePath = () => path.join(process.env.APP
 autoUpdater.logger.transports.file.level = "info"
 
 export const checkForUpdates = ()=>{
- autoUpdater.checkForUpdates();
+ autoUpdater.checkForUpdatesAndNotify();
 }
