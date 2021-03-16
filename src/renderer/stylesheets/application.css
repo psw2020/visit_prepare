@@ -32,6 +32,8 @@ body {
   flex: 1;
   flex-direction: column;
   padding: 10px;
+  position: sticky;
+  top:0;
 }
 
 .taskListItem{
@@ -110,3 +112,5 @@ body {
   opacity: 0;
   transition: opacity 0.5s ease;
 }
+
+.content{}

@@ -7,11 +7,11 @@ const taskListHelpers = {
         let str = '';
 
         arr.forEach(v => {
-            let notes = (v.notes) ? v.notes.substr(0, 40) + '&hellip;' : null;
+            let notes = (v.notes) ? v.notes.substr(0, 30) + '&hellip;' : '---';
             let cl = (v.docid && v.clid) ? '' : 'disabled';
             let complete = (+v.taskMark === 11) ? 'complete' : '';
             str += `
-          <div class="taskListItem ${cl} ${complete}" data-complete="${complete}" data-docid="${v.docid}" data-clid="${v.clid}" data-contact="${v.contact}" data-docplid="${v.docplid}">
+          <div title="${v.notes || ``}" class="taskListItem ${cl} ${complete}" data-complete="${complete}" data-docid="${v.docid}" data-clid="${v.clid}" data-contact="${v.contact}" data-docplid="${v.docplid}">
             <p class="date">${v.date}</p>
             <p class="model">${(v.mark) ? `${v.mark} ${v.model}` : `${notes}`}</p>
             <p class="gosnumber">${(v.regno) ? `${v.regno}` : `---`}</p>

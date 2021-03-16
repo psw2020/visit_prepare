@@ -51,7 +51,7 @@ export default class VisitPrepare {
             }
         })
         this.window.loadFile('renderer/index.html');
-        //this.window.webContents.openDevTools({mode: 'detach'});
+        this.window.webContents.openDevTools({mode: 'detach'});
 
         this.tray = new Tray(path.resolve(__dirname, icon));
         this.tray.setToolTip('Подготовка к визиту');
