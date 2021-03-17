@@ -40,18 +40,19 @@ export default class VisitPrepare {
             minHeight: Math.round(height / 3),
             maxWidth: width,
             maxHeight: height,
+            skipTaskbar: true,
             show: false,
+            closable:false,
             title: 'Подготовка к визиту',
             titleBarStyle: 'hidden',
             autoHideMenuBar: true,
             backgroundColor: '#2980b9',
-            closable: false,
             webPreferences: {
                 preload: path.join(app.getAppPath(), 'preload', 'index.js')
             }
         })
         this.window.loadFile('renderer/index.html');
-        this.window.webContents.openDevTools({mode: 'detach'});
+       // this.window.webContents.openDevTools({mode: 'detach'});
 
         this.tray = new Tray(path.resolve(__dirname, icon));
         this.tray.setToolTip('Подготовка к визиту');
