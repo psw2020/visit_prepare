@@ -10,17 +10,17 @@ window.getTaskList = () => { //Запрос списка задач с серв�
 
 ipcRenderer.on('taskList', (_, data) => { //Построение списка из ответа сервера
     if (!data) {
-        document.getElementById('taskList').innerHTML = `<div class="alert alert-success" role="alert">Нет заданий</div>`;
+        newMessage('Нет заданий', 'success');
         return;
     }
-    document.getElementById('taskList').innerHTML = taskListHelpers.createTaskList(data);
-    document.getElementById('workArea').innerHTML = `<h2>Выберите задание</h2>`;
-    window.addEventForTaskList();
+    appendInTaskList(taskListHelpers.createTaskList(data));
+    appendInWorkArea(`<h2>Выберите задание</h2>`);
+    addEventForTaskList();
 
 });
 
 ipcRenderer.on('getTaskListErr', () => { //Если сервер вернул ошибку
-    window.getTaskListErr();
+    getTaskListErr();
 });
 
 /*Список исполнителей*/
@@ -29,13 +29,13 @@ window.getEmployeeList = () => { //Запрос списка исполните�
 }
 
 ipcRenderer.on('employeeList', (_, data) => { //Запись исполнителей в кеш, построение списка заданий
-    window.cache.employeeList = data;
-    window.getTaskList();
+    cache.employeeList = data;
+    getTaskList();
 })
 
 ipcRenderer.on('getEmployeeListErr', () => { //Если вернулась ошибка
     newMessage('Ошибка соединения с сервером', 'danger');
-    document.getElementById('taskList').innerHTML = '';
+    appendInTaskList();
 })
 
 /*Заказ наряд*/
@@ -63,7 +63,7 @@ ipcRenderer.on('saveOrderError', () => {
 ipcRenderer.on('saveOrderComplete', (_, data) => {
     if (data.ok) {
         newMessage('Задание оформлено, выберите следующее', 'success');
-        document.getElementById('workArea').innerHTML = '';
+        appendInWorkArea();
         window.getTaskList();
     } else {
         newMessage('Успешно сохранено', 'success');

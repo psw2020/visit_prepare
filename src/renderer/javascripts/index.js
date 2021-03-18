@@ -112,3 +112,11 @@ function createWorkListCheckArr() {
     }
     return arr;
 }
+
+window.appendInTaskList= (str='')=>{
+    document.getElementById('taskList').innerHTML = str;
+}
+
+window.appendInWorkArea= (str='')=>{
+    document.getElementById('workArea').innerHTML = str;
+}
