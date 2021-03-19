@@ -80,7 +80,7 @@ function fullOrderObjClear(obj) {
         visit: obj.firstVisit,
         workList: obj.orderWorkList,
         ownParts: obj.ownPartPercent,
-        payments: toClearInt(obj.paymentSum),
+        payments: (obj.paymentSum) ? toClearInt(obj.paymentSum) : 0,
         fullNumber: obj.orderBaseInfo['FULLNUMBER'],
         docRegId: obj.orderBaseInfo['DOCUMENT_REGISTRY_ID'],
         offerText: obj.orderBaseInfo['OFFER'],

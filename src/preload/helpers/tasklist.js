@@ -4,7 +4,7 @@ const taskListHelpers = {
 
     createTaskList(obj) {
         const arr = taskListObjClear(obj);
-        let str = '';
+        let str = `<div class="taskListWrapper">`;
 
         arr.forEach(v => {
             let notes = (v.notes) ? v.notes.substr(0, 30) + '&hellip;' : '---';
@@ -18,7 +18,7 @@ const taskListHelpers = {
             </div>`;
         });
 
-        return str;
+        return str + '</div>';
     },
 
 

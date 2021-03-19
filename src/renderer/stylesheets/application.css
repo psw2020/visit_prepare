@@ -21,19 +21,32 @@ body {
 
 }
 
-.taskList{
+#taskList{
   display: flex;
   flex-direction: column;
-
   min-width: 300px;
 }
 #workArea{
   display: flex;
   flex: 1;
   flex-direction: column;
-  padding: 10px;
+  padding: 10px 10px 10px 40px;
   position: sticky;
   top:0;
+}
+
+.taskListWrapper{
+  position: absolute;
+  height: 100%;
+  overflow-y: auto;
+}
+
+.taskListWrapper::-webkit-scrollbar {
+  width: 2px;
+  background-color:#5a6268;
+}
+.taskListWrapper::-webkit-scrollbar-thumb {
+  background-color: #0078D7;
 }
 
 .taskListItem{
