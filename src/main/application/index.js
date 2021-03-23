@@ -42,7 +42,7 @@ export default class VisitPrepare {
             maxHeight: height,
             skipTaskbar: true,
             show: false,
-            closable:false,
+            closable: false,
             title: 'Подготовка к визиту',
             titleBarStyle: 'hidden',
             autoHideMenuBar: true,
@@ -52,13 +52,22 @@ export default class VisitPrepare {
             }
         })
         this.window.loadFile('renderer/index.html');
-        this.window.webContents.openDevTools({mode: 'detach'});
+        //this.window.webContents.openDevTools({mode: 'detach'});
 
         this.tray = new Tray(path.resolve(__dirname, icon));
         this.tray.setToolTip('Подготовка к визиту');
         this.tray.on("double-click", () => {
             this.window.isVisible() ? this.window.hide() : this.window.show();
         })
+        this.tray.setContextMenu(Menu.buildFromTemplate([
+                {
+                    label: 'Выход',
+                    click(){
+                        app.exit();
+                    }
+                }
+            ]
+        ))
 
         this.window.on("ready-to-show", () => this.window.show());
 
@@ -138,6 +147,11 @@ export default class VisitPrepare {
 
         ipcMain.on('saveOrder', async (_, data) => {
             await this.saveOrder(data);
+        })
+
+        ipcMain.on('showWindow',()=>{
+            this.window.show();
+            this.window.focus();
         })
 
     }

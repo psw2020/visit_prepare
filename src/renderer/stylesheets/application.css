@@ -24,7 +24,7 @@ body {
 #taskList{
   display: flex;
   flex-direction: column;
-  min-width: 300px;
+  min-width: 317px;
 }
 #workArea{
   display: flex;

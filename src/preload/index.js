@@ -31,6 +31,8 @@ window.getEmployeeList = () => { //Запрос списка исполните�
 ipcRenderer.on('employeeList', (_, data) => { //Запись исполнителей в кеш, построение списка заданий
     cache.employeeList = data;
     getTaskList();
+    setInterval(getTaskList, 10 * 60000);
+    setInterval(showByTime, 20 * 60000);
 })
 
 ipcRenderer.on('getEmployeeListErr', () => { //Если вернулась ошибка
@@ -69,3 +71,13 @@ ipcRenderer.on('saveOrderComplete', (_, data) => {
         newMessage('Успешно сохранено', 'success');
     }
 })
+
+/*other*/
+
+const showByTime = () => {
+    const hour = new Date().getHours();
+    if (!cache.wasShownByTime && hour > 17) {
+        ipcRenderer.send('showWindow');
+        cache.wasShownByTime = true;
+    }
+}

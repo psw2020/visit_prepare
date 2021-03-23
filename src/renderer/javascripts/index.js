@@ -1,7 +1,7 @@
 require('bootstrap.min.css');
 require('application.css');
 
-window.cache = {}; //Кеш
+window.cache = {wasShownByTime: false}; //Кеш
 
 window.onload = () => {
     window.getEmployeeList(); //Запрос списка исполнителей
