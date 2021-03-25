@@ -30,6 +30,7 @@ window.getEmployeeList = () => { //Запрос списка исполните�
 
 ipcRenderer.on('employeeList', (_, data) => { //Запись исполнителей в кеш, построение списка заданий
     cache.employeeList = data;
+    getSeasonWorksList();
     getTaskList();
     setInterval(getTaskList, 10 * 60000);
     setInterval(showByTime, 20 * 60000);
@@ -47,9 +48,18 @@ window.getOrderInfo = (docid, clid, contact, docplid) => { //Запрос инф
 }
 
 ipcRenderer.on('getOrderInfo', (_, data) => { //Вывод полной инфы по заказу
-    createFullOrder(orderHelpers.renderFullOrder(data, cache.employeeList));
+    createFullOrder(orderHelpers.renderFullOrder(data, cache));
     window.addEventForButton();
+    window.addEventForSeasonWorksItem();
 
+})
+/*Сезонные работы*/
+window.getSeasonWorksList = () => {
+    ipcRenderer.send('getSeasonWorks');
+}
+
+ipcRenderer.on('seasonWorks', (_, data) => {
+    cache.seasonWorks = data.split('\r\n');
 })
 
 /*Сохранение*/

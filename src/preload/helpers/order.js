@@ -1,7 +1,7 @@
 import {DateTime} from "luxon";
 
 const orderHelpers = {
-    renderFullOrder(obj, employee) {
+    renderFullOrder(obj, cache) {
         const o = fullOrderObjClear(obj);
         return `<h3>Общая информация</h3>
         <p>${o.name}</p>
@@ -17,17 +17,29 @@ const orderHelpers = {
 
         <h3>Наличие запчастей</h3>
         <div class="partsList">
-        ${createPartList(o.workList, employee)}
+        ${createPartList(o.workList, cache.employeeList)}
         </div>
         
         <h3>Обязательно предложить</h3>
         <label><input type="text" data-docregisid="${o.docRegId}" id="recommendation" value="${(o.offerText) ? `${o.offerText}` : ``}"></label>
+        ${createSeasonWorksList(cache.seasonWorks)}
 
         <div class="buttons" data-docplan="${o.docPlan}">
             <button id="save" class="btn-light">Сохранить</button>
             <button id="confirm" class="btn-light">Оформить</button>
         </div>`;
     }
+}
+
+function createSeasonWorksList(arr) {
+    let str = `<ul class="seasonWorks">`;
+
+    for (let i = 0; i < arr.length; i++) {
+        str += `<li class="seasonWorksItem">${arr[i]}</li>`;
+    }
+
+    str += '</ul>'
+    return str;
 }
 
 function createPartList(arr, employee) {

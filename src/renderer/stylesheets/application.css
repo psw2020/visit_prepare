@@ -100,6 +100,8 @@ body {
 
 #recommendation{
   margin-bottom: 10px;
+  width: 100%;
+  font-size: 12px;
 }
 
 .taskListError{
@@ -127,3 +129,22 @@ body {
 }
 
 .content{}
+
+.seasonWorks{
+  list-style: none;
+  margin-top: -15px;
+  padding: 0;
+}
+
+.seasonWorks li{
+  float: left;
+  font-size: 12px;
+  padding: 0 5px;
+  color: #adadad;
+}
+
+.seasonWorks li:hover{
+  text-decoration: underline;
+  cursor: pointer;
+  color: white;
+}

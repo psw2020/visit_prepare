@@ -3,6 +3,7 @@ import path from "path";
 import icon from 'tray_16.png';
 import Api from './api';
 import {DateTime} from 'luxon';
+import {existsSync, readFileSync} from 'fs';
 
 export default class VisitPrepare {
     constructor() {
@@ -14,6 +15,18 @@ export default class VisitPrepare {
         this.subscribeForIPC();
         this.lock = app.requestSingleInstanceLock();
         app.whenReady().then(() => this.createWindow());
+        app.setLoginItemSettings({
+            openAtLogin: true
+        });
+    }
+
+    getSeasonWorkList(){
+        const file = `\\\\FS01\\common\\Сезонные работы\\list.txt`;
+        if(existsSync(file)){
+            const list = readFileSync(file, "utf8");
+            return list;
+        }
+        return '';
     }
 
     createWindow() {
@@ -52,7 +65,7 @@ export default class VisitPrepare {
             }
         })
         this.window.loadFile('renderer/index.html');
-        //this.window.webContents.openDevTools({mode: 'detach'});
+        this.window.webContents.openDevTools({mode: 'detach'});
 
         this.tray = new Tray(path.resolve(__dirname, icon));
         this.tray.setToolTip('Подготовка к визиту');
@@ -135,6 +148,9 @@ export default class VisitPrepare {
                 .catch(() => this.window.webContents.send('getEmployeeListErr'));
         })
 
+        ipcMain.on('getSeasonWorks',()=>{
+            this.window.webContents.send('seasonWorks',this.getSeasonWorkList());
+        })
 
         ipcMain.on('getTaskList', () => { //Спискок заданий
             this.getTaskList();

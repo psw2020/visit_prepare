@@ -37,6 +37,29 @@ window.addEventForButton = () => {
     document.getElementById('confirm').addEventListener('click', () => window.saveOrder(1));
 }
 
+window.addEventForSeasonWorksItem = () => {
+    let el = document.getElementsByClassName('seasonWorksItem');
+    for (let i = 0; i < el.length; i++) {
+        el[i].addEventListener('click', () => {
+
+            let rec = document.getElementById('recommendation');
+            let text = el[i].innerText;
+
+            if (rec.value.indexOf(text) >= 0) {
+                return;
+            }
+
+            if (rec.value.length > 0) {
+                rec.value = rec.value + ', ' + text;
+            } else {
+                rec.value = text;
+            }
+
+
+        })
+    }
+}
+
 window.addEventForTaskList = () => {
     let items = document.querySelectorAll('.taskListItem');
 
@@ -113,10 +136,10 @@ function createWorkListCheckArr() {
     return arr;
 }
 
-window.appendInTaskList= (str='')=>{
+window.appendInTaskList = (str = '') => {
     document.getElementById('taskList').innerHTML = str;
 }
 
-window.appendInWorkArea= (str='')=>{
+window.appendInWorkArea = (str = '') => {
     document.getElementById('workArea').innerHTML = str;
 }
