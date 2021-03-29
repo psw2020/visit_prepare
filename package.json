@@ -25,7 +25,8 @@
     "appId": "com.electron.visitprepare",
     "publish": [
       {
-        "provider": "github"
+        "provider": "github",
+        "private": true
       }
     ],
     "win": {}
