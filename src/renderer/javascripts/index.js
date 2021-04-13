@@ -100,12 +100,17 @@ function checkWorkList() {
     const employeeList = document.getElementsByClassName('employeeSelect');
     const recommendation = document.getElementById('recommendation').value;
 
+    if(workReadyList.length === 0){
+        newMessage('В заказ наряде отсутствуют работы!','danger');
+        return false;
+    }
+
     for (let i = 0; i < workReadyList.length; i++) {
         let check = workReadyList[i].checked;
         let employee = employeeList[i].value;
 
         if (!check) {
-            newMessage('Подтвердите возможноость выполнения всех работ!', 'warning');
+            newMessage('Подтвердите возможность выполнения всех работ!', 'warning');
             return false;
         } else if (isNaN(employee)) {
             newMessage('Назначьте исполнителей на все работы!', 'warning');

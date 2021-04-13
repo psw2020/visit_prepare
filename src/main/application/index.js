@@ -148,7 +148,7 @@ export default class VisitPrepare {
                 .catch(() => this.window.webContents.send('getEmployeeListErr'));
         })
 
-        ipcMain.on('getSeasonWorks',()=>{
+        ipcMain.on('getSeasonWorks',()=>{ //Список сезонных работ
             this.window.webContents.send('seasonWorks',this.getSeasonWorkList());
         })
 
@@ -161,13 +161,26 @@ export default class VisitPrepare {
             this.window.webContents.send('getOrderInfo', obj);
         });
 
-        ipcMain.on('saveOrder', async (_, data) => {
+        ipcMain.on('saveOrder', async (_, data) => { //сохранить или оформить задание
             await this.saveOrder(data);
         })
 
         ipcMain.on('showWindow',()=>{
             this.window.show();
             this.window.focus();
+        })
+
+        ipcMain.on('fullScreenAndMaximizable',(_,data)=>{ //развернуть и отобразить поверх всех окон на data.second секунд
+            this.window.maximize();
+            this.window.setMinimizable(false);
+            this.window.setAlwaysOnTop(true);
+            this.window.setMaximizable(false);
+            setTimeout(()=>{
+                this.window.unmaximize();
+                this.window.setMaximizable(true);
+                this.window.setMinimizable(true);
+                this.window.setAlwaysOnTop(false);
+            },data.second * 1000)
         })
 
     }

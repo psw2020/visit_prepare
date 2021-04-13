@@ -42,7 +42,7 @@ body {
 }
 
 .taskListWrapper::-webkit-scrollbar {
-  width: 2px;
+  width: 10px;
   background-color:#5a6268;
 }
 .taskListWrapper::-webkit-scrollbar-thumb {
@@ -148,3 +148,5 @@ body {
   cursor: pointer;
   color: white;
 }
+
+.exploited{border-color: #8b0400 !important;}

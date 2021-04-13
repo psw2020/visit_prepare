@@ -13,9 +13,19 @@ ipcRenderer.on('taskList', (_, data) => { //Построение списка и
         newMessage('Нет заданий', 'success');
         return;
     }
+    cache.hasExploitedTask = false; //сбросить признак просроченного задания в кеше
     appendInTaskList(taskListHelpers.createTaskList(data));
     appendInWorkArea(`<h2>Выберите задание</h2>`);
     addEventForTaskList();
+
+    const date = new Date();
+    if (date.getHours() > 19) { //Разворачивать приложение на весь экран поверх всех окон, если после 19 часов есть необработанные задания
+        ipcRenderer.send('fullScreenAndMaximizable', {second: 20});
+        newMessage('Пора обрабатывать задания!!!', 'warning');
+    } else if (cache.hasExploitedTask) { //Если появились просроченные задание сделать тоже самое
+        ipcRenderer.send('fullScreenAndMaximizable', {second: 20});
+        newMessage('Есть просроченные задания!', 'danger');
+    }
 
 });
 
