@@ -82,13 +82,12 @@ function createEmployeeOptions(arr, id) {
 function fullOrderObjClear(obj) {
     let burnDate = (obj.bonusFirstBurnDate) ? DateTime.fromISO(obj.bonusFirstBurnDate.delete_date).toFormat('dd.LL.yyyy') : null;
     let burnSum = (obj.bonusFirstBurnDate) ? toClearInt(obj.bonusFirstBurnDate.sum) : null;
-
     return {
         bonus: toClearInt(+obj.bonusBalance),
         burnDate: burnDate,
         burnSum: burnSum,
         name: obj.client['SHORTNAME'],
-        phone: obj.contact['MOBILE'] || obj.contact['PHONE'],
+        phone: (typeof obj.contact == "undefined") ? '---' : obj.contact['MOBILE'] || obj.contact['PHONE'],
         visit: obj.firstVisit,
         workList: obj.orderWorkList,
         ownParts: obj.ownPartPercent,
