@@ -20,9 +20,9 @@ export default class VisitPrepare {
         });
     }
 
-    getSeasonWorkList(){
+    getSeasonWorkList() {
         const file = `\\\\FS01\\common\\Сезонные работы\\list.txt`;
-        if(existsSync(file)){
+        if (existsSync(file)) {
             const list = readFileSync(file, "utf8");
             return list;
         }
@@ -75,7 +75,7 @@ export default class VisitPrepare {
         this.tray.setContextMenu(Menu.buildFromTemplate([
                 {
                     label: 'Выход',
-                    click(){
+                    click() {
                         app.exit();
                     }
                 }
@@ -148,8 +148,8 @@ export default class VisitPrepare {
                 .catch(() => this.window.webContents.send('getEmployeeListErr'));
         })
 
-        ipcMain.on('getSeasonWorks',()=>{ //Список сезонных работ
-            this.window.webContents.send('seasonWorks',this.getSeasonWorkList());
+        ipcMain.on('getSeasonWorks', () => { //Список сезонных работ
+            this.window.webContents.send('seasonWorks', this.getSeasonWorkList());
         })
 
         ipcMain.on('getTaskList', () => { //Спискок заданий
@@ -165,22 +165,22 @@ export default class VisitPrepare {
             await this.saveOrder(data);
         })
 
-        ipcMain.on('showWindow',()=>{
+        ipcMain.on('showWindow', () => {
             this.window.show();
             this.window.focus();
         })
 
-        ipcMain.on('fullScreenAndMaximizable',(_,data)=>{ //развернуть и отобразить поверх всех окон на data.second секунд
+        ipcMain.on('fullScreenAndMaximizable', (_, data) => { //развернуть и отобразить поверх всех окон на data.second секунд
             this.window.maximize();
             this.window.setMinimizable(false);
             this.window.setAlwaysOnTop(true);
             this.window.setMaximizable(false);
-            setTimeout(()=>{
+            setTimeout(() => {
                 this.window.unmaximize();
                 this.window.setMaximizable(true);
                 this.window.setMinimizable(true);
                 this.window.setAlwaysOnTop(false);
-            },data.second * 1000)
+            }, data.second * 1000)
         })
 
     }
@@ -231,12 +231,13 @@ export default class VisitPrepare {
                     ownPartPercent: (await this.api.get(`client/ownPartsPercent?id=${data.clid}`))['VAL'],
                     bonusBalance: (await this.api.get(`client/bonusBalance?id=${data.clid}`))[0]['val'],
                     bonusFirstBurnDate: (await this.api.get(`client/bonusFirstBurnDate?id=${data.clid}`))[0],
-                    firstVisit: this.dateTime.fromISO(orderList[orderList.length - 1]['DATETIME']).toFormat('dd.LL.yyyy'),
+                    firstVisit: (orderList.length) ? this.dateTime.fromISO(orderList[orderList.length - 1]['DATETIME']).toFormat('dd.LL.yyyy') : '---',
                     docPlan: data.docplid
 
                 }
+
             }
-            obj.middleCheck = Math.round(obj.paymentSum / orderList.length);
+            obj.middleCheck = (obj.paymentSum) ? Math.round(obj.paymentSum / orderList.length) : 0;
             this.cache[data.docplid] = obj;
             return obj;
         } catch (e) {

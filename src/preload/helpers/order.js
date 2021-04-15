@@ -80,8 +80,10 @@ function createEmployeeOptions(arr, id) {
 }
 
 function fullOrderObjClear(obj) {
-    let burnDate = (obj.bonusFirstBurnDate) ? DateTime.fromISO(obj.bonusFirstBurnDate.delete_date).toFormat('dd.LL.yyyy') : null;
-    let burnSum = (obj.bonusFirstBurnDate) ? toClearInt(obj.bonusFirstBurnDate.sum) : null;
+    let burnDate = (typeof obj.bonusFirstBurnDate == "undefined") ? null :
+        (obj.bonusFirstBurnDate) ? DateTime.fromISO(obj.bonusFirstBurnDate.delete_date).toFormat('dd.LL.yyyy') : null;
+    let burnSum = (typeof obj.bonusFirstBurnDate == "undefined") ? null :
+        (obj.bonusFirstBurnDate) ? toClearInt(obj.bonusFirstBurnDate.sum) : null;
     return {
         bonus: toClearInt(+obj.bonusBalance),
         burnDate: burnDate,
