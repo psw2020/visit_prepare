@@ -1,7 +1,10 @@
 require('bootstrap.min.css');
 require('application.css');
 
-window.cache = {wasShownByTime: false}; //Кеш
+window.cache = {
+    wasShownByTime: false,
+    addedAdditionalWorks: {}
+}; //Кеш
 
 window.onload = () => {
     window.getEmployeeList(); //Запрос списка исполнителей
@@ -37,25 +40,28 @@ window.addEventForButton = () => {
     document.getElementById('confirm').addEventListener('click', () => window.saveOrder(1));
 }
 
-window.addEventForSeasonWorksItem = () => {
-    let el = document.getElementsByClassName('seasonWorksItem');
+window.addEventForAdditionalWorksItem = () => {
+    const el = document.getElementsByClassName('additionalWorksItem');
+    const addUl = document.getElementById('addUl');
     for (let i = 0; i < el.length; i++) {
         el[i].addEventListener('click', () => {
+            const id = el[i].dataset.id;
+            const time = el[i].dataset.time;
+            const price = el[i].dataset.price;
+            const name = el[i].textContent;
+            cache.addedAdditionalWorks[id] = {id, time, price, name}; /* пишем в кеш выбранную работу */
 
-            let rec = document.getElementById('recommendation');
-            let text = el[i].innerText;
+            const li = document.createElement('li'); //создаем элемент списка выбранных работ
+            li.innerHTML = `${name} <span id="${id}">X</span>`;
+            addUl.append(li);
+            el[i].hidden = true; //скрываем работу из списка выбора
 
-            if (rec.value.indexOf(text) >= 0) {
-                return;
-            }
-
-            if (rec.value.length > 0) {
-                rec.value = rec.value + ', ' + text;
-            } else {
-                rec.value = text;
-            }
-
-
+            const span = li.children[0];
+            span.addEventListener('click', () => {
+                delete cache.addedAdditionalWorks[span.id]; //удалить выбранную работу из кеша
+                el[i].hidden = false; //отобразить ранее скрытую работу в списке выбора
+                li.remove(); //удалить элемент из списка выбранных работ
+            })
         })
     }
 }
@@ -65,6 +71,7 @@ window.addEventForTaskList = () => {
 
     items.forEach(v => {
             if (+v.dataset.docid && +v.dataset.clid) {
+                cache.currentOrderInfo = {...v.dataset}; //записать в кеш инфу по текущему заказ наряду для обновления после сохранения
                 v.addEventListener('click', () => getOrderInfo(v.dataset.docid, v.dataset.clid, v.dataset.contact, v.dataset.docplid));
             } else if (!+v.dataset.clid) {
                 v.addEventListener('click', () => newMessage('Заданию не назначен клиент', 'warning'));
@@ -88,9 +95,8 @@ window.saveOrder = (confirm = null) => {
     }
 
     obj.workListCheck = createWorkListCheckArr();
-    obj.docRegId = document.getElementById('recommendation').dataset.docregisid;
-    obj.docPlan = document.getElementsByClassName('buttons')[0].dataset.docplan;
-    obj.recommendation = document.getElementById('recommendation').value;
+    obj.docInfo = cache.currentOrderInfo;
+    obj.additionalWorks = cache.addedAdditionalWorks;
     window.sendOrderData(obj);
 }
 
@@ -98,10 +104,9 @@ window.saveOrder = (confirm = null) => {
 function checkWorkList() {
     const workReadyList = document.getElementsByClassName('workCheck');
     const employeeList = document.getElementsByClassName('employeeSelect');
-    const recommendation = document.getElementById('recommendation').value;
 
-    if(workReadyList.length === 0){
-        newMessage('В заказ наряде отсутствуют работы!','danger');
+    if (workReadyList.length === 0) {
+        newMessage('В заказ наряде отсутствуют работы!', 'danger');
         return false;
     }
 
@@ -118,9 +123,9 @@ function checkWorkList() {
         }
     }
 
-    if (!recommendation) {
-        newMessage('Впишите обязательную рекомендацию для клиента!', 'warning');
-        return false;
+    if(Object.keys(cache.addedAdditionalWorks).length){
+        newMessage('В заказ добавлены дополнительные работы, сохраните наряд и назначьте исполнителей!', 'warning');
+        return false
     }
 
     return true;

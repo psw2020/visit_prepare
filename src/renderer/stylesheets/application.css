@@ -130,23 +130,25 @@ body {
 
 .content{}
 
-.seasonWorks{
+.additionalWorks{
   list-style: none;
   margin-top: -15px;
   padding: 0;
 }
 
-.seasonWorks li{
+.additionalWorks li{
   float: left;
   font-size: 12px;
   padding: 0 5px;
   color: #adadad;
 }
 
-.seasonWorks li:hover{
+.additionalWorks li:hover{
   text-decoration: underline;
   cursor: pointer;
   color: white;
 }
 
 .exploited{border-color: #8b0400 !important;}
+#addUl li span{color: #ff201a;cursor: pointer;}
+#addUl li:last-child{border-bottom: 1px dashed #4e555b;}

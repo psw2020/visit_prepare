@@ -6,10 +6,12 @@ const taskListHelpers = {
     createTaskList(obj) {
         const arr = taskListObjClear(obj);
         let str = `<div class="taskListWrapper">`;
+        let taskCounter = 0; //счетчик заданий
         arr.forEach(v => {
 
             if (v.differenceToOder < 0) return; //если задание просрочено не обрабатывать его
 
+            taskCounter++;
             let notes = (v.notes) ? v.notes.substr(0, 29) + '&hellip;' : '---';
             let cl = (v.docid && v.clid) ? '' : 'disabled';
             let complete = (+v.taskMark === 11) ? 'complete' : '';
@@ -24,11 +26,17 @@ const taskListHelpers = {
 
             str += `
           <div title="${v.notes || ``}" class="taskListItem ${cl} ${complete} ${exploited}" data-complete="${complete}" data-docid="${v.docid}" data-clid="${v.clid}" data-contact="${v.contact}" data-docplid="${v.docplid}">
-            <p class="date">${v.date}</p>
+            <p class="date">${v.date} ${(v.fullNumber) ? `з/н ${v.fullNumber}` : ''}</p>
             <p class="model">${(v.mark) ? `${v.mark} ${v.model}` : `${notes}`}</p>
             <p class="gosnumber">${(v.regno) ? `${v.regno}` : `---`}</p>
             </div>`;
         });
+
+        if (!taskCounter) {
+            newMessage('Нет заданий', 'success');
+        } else {
+            appendInWorkArea(`<h2>Выберите задание</h2>`);
+        }
 
         return str + '</div>';
     },
@@ -68,7 +76,8 @@ function taskListObjClear(arr) {
             CLIENT_ID: clid,
             CLIENT_CONTACT_ID: contact,
             DP_MARK: taskMark,
-            NOTES: notes
+            NOTES: notes,
+            FULLNUMBER: fullNumber
         } = v;
         let isToday = false;
         let differenceToOder = (Math.round((new Date(date) - dateNow) / 1000 / 60)); //сколько минут осталось до начала задания
@@ -90,7 +99,8 @@ function taskListObjClear(arr) {
             notes,
             differenceToOder,
             differenceFromCreate,
-            isToday
+            isToday,
+            fullNumber
         });
     });
     return a;

@@ -20,22 +20,29 @@ const orderHelpers = {
         ${createPartList(o.workList, cache.employeeList)}
         </div>
         
-        <h3>Обязательно предложить</h3>
-        <label><input type="text" data-docregisid="${o.docRegId}" id="recommendation" value="${(o.offerText) ? `${o.offerText}` : ``}"></label>
-        ${createSeasonWorksList(cache.seasonWorks)}
-
-        <div class="buttons" data-docplan="${o.docPlan}">
+        <h3>Добавить подходящие работы:</h3>
+        <div class="addedAdditionalWorks">
+        <ul id="addUl">
+        
+        </ul>
+        </div>
+        ${createAdditionalWorksList(cache.additionalWorks)}
+        <div class="buttons" data-docplan="${o.docPlan}" data-docout="${o.docOutId}">
             <button id="save" class="btn-light">Сохранить</button>
             <button id="confirm" class="btn-light">Оформить</button>
         </div>`;
     }
+
 }
 
-function createSeasonWorksList(arr) {
-    let str = `<ul class="seasonWorks">`;
+function createAdditionalWorksList(arr) {
+    let str = `<ul class="additionalWorks">`;
 
     for (let i = 0; i < arr.length; i++) {
-        str += `<li class="seasonWorksItem">${arr[i]}</li>`;
+        str += `<li class="additionalWorksItem" 
+                data-id="${arr[i]['ID']}"
+                data-price="${arr[i]['PRICE']}" 
+                data-time="${arr[i]['TIME_VALUE']}">${arr[i]['NAME']}</li>`;
     }
 
     str += '</ul>'
@@ -96,8 +103,11 @@ function fullOrderObjClear(obj) {
         payments: (obj.paymentSum) ? toClearInt(obj.paymentSum) : 0,
         fullNumber: obj.orderBaseInfo['FULLNUMBER'],
         docRegId: obj.orderBaseInfo['DOCUMENT_REGISTRY_ID'],
+        docOutId: obj.orderBaseInfo['DOCUMENT_OUT_ID'],
         offerText: obj.orderBaseInfo['OFFER'],
         bonusText: obj.orderBaseInfo['BONUS_INFO'],
+        mileage: obj.orderBaseInfo['RUN_BEFORE'],
+        model: obj.orderBaseInfo['NAME'],
         check: toClearInt(obj.middleCheck),
         docPlan: obj.docPlan
 

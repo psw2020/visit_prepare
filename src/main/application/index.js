@@ -3,7 +3,6 @@ import path from "path";
 import icon from 'tray_16.png';
 import Api from './api';
 import {DateTime} from 'luxon';
-import {existsSync, readFileSync} from 'fs';
 
 export default class VisitPrepare {
     constructor() {
@@ -18,15 +17,6 @@ export default class VisitPrepare {
         app.setLoginItemSettings({
             openAtLogin: true
         });
-    }
-
-    getSeasonWorkList() {
-        const file = `\\\\FS01\\common\\Сезонные работы\\list.txt`;
-        if (existsSync(file)) {
-            const list = readFileSync(file, "utf8");
-            return list;
-        }
-        return '';
     }
 
     createWindow() {
@@ -65,7 +55,7 @@ export default class VisitPrepare {
             }
         })
         this.window.loadFile('renderer/index.html');
-        //this.window.webContents.openDevTools({mode: 'detach'});
+        this.window.webContents.openDevTools({mode: 'detach'});
 
         this.tray = new Tray(path.resolve(__dirname, icon));
         this.tray.setToolTip('Подготовка к визиту');
@@ -136,6 +126,11 @@ export default class VisitPrepare {
             .catch(() => this.window.webContents.send('getTaskListErr'));
     }
 
+    async getOrderInfo(data) {
+        const obj = await this.createOrderObj(data);
+        this.window.webContents.send('getOrderInfo', obj);
+    }
+
     subscribeForIPC() { //Подписка на сообщения с рендер процесса
 
         ipcMain.on('getEmployeeList', () => { //Список исполнителей
@@ -148,17 +143,12 @@ export default class VisitPrepare {
                 .catch(() => this.window.webContents.send('getEmployeeListErr'));
         })
 
-        ipcMain.on('getSeasonWorks', () => { //Список сезонных работ
-            this.window.webContents.send('seasonWorks', this.getSeasonWorkList());
-        })
-
         ipcMain.on('getTaskList', () => { //Спискок заданий
             this.getTaskList();
         });
 
-        ipcMain.on('getOrderInfo', async (_, data) => { //Формирования объекта подробностей задания
-            const obj = await this.createOrderObj(data);
-            this.window.webContents.send('getOrderInfo', obj);
+        ipcMain.on('getOrderInfo', (_, data) => { //Формирования объекта подробностей задания
+            this.getOrderInfo(data);
         });
 
         ipcMain.on('saveOrder', async (_, data) => { //сохранить или оформить задание
@@ -187,25 +177,43 @@ export default class VisitPrepare {
 
     async saveOrder(data) {
         let obj = {};
+        const {...docInfo} = data.docInfo;
         const err = () => {
             this.window.webContents.send('saveOrderError');
         }
 
         try {
-
             if (data.confirm) {
-                await this.api.put(`task/updateTaskMark?docpl=${data.docPlan}&mark=11`);
+                await this.api.put(`task/updateTaskMark?docpl=${docInfo.docplid}&mark=11`);
                 obj.ok = true;
             }
-
-            await this.api.put(`order/updateRequiredRecommendation`, {docreg: data.docRegId, str: data.recommendation});
 
             for (let v of data.workListCheck) {
                 await this.api.put(`employee/setEmployeeOnWork?workid=${v.workId}&employee=${v.employee}&ready=${v.ready}`);
             }
+
+            for (let v in data.additionalWorks) {
+                const {...o} = data.additionalWorks[v];
+                await this.api.delete(`order/orderDeleteWork`, {
+                    docOutId: docInfo.docid,
+                    code: 'fvp' + o.id
+                });
+                await this.api.post(`order/orderInsertWork`, {
+                    docOutId: docInfo.docid,
+                    name: o.name,
+                    code: 'fvp' + o.id,
+                    time: o.time,
+                    price: o.price
+                });
+            }
+
         } catch (e) {
             err();
             return;
+        }
+
+        if (!data.confirm) { //если задание просто сохраняется, а не оформляется
+            await this.getOrderInfo(docInfo);
         }
 
         this.window.webContents.send('saveOrderComplete', obj);

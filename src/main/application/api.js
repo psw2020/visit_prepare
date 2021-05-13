@@ -6,7 +6,7 @@ export default class Api {
         this.user = user;
         this.localhost = 'http://127.0.0.1:3010/';
         this.deployhost = 'http://172.16.1.20:3010/';
-        this.apiHost = this.deployhost;
+        this.apiHost = this.localhost;
         this.token = null;
         this.refresh = null;
     }
@@ -36,7 +36,7 @@ export default class Api {
     }
 
     async get(url, retry = false) {
-        let res = await fetch(this.apiHost + url, {
+        let res = await fetch(encodeURI(this.apiHost + url), {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
@@ -68,6 +68,48 @@ export default class Api {
             console.log(401);
             await this.auth();
             return await this.put(url, body, true);
+        }
+        if (res.ok) {
+            return await res.json();
+        } else {
+            throw(`"${url}" request error ${res.status}`);
+        }
+    }
+
+    async post(url, body = {}, retry = false) {
+        let res = await fetch(this.apiHost + url, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': await this.getToken()
+            },
+            body: JSON.stringify(body)
+        });
+        if (res.status === 401 && !retry) {
+            console.log(401);
+            await this.auth();
+            return await this.post(url, body, true);
+        }
+        if (res.ok) {
+            return await res.json();
+        } else {
+            throw(`"${url}" request error ${res.status}`);
+        }
+    }
+
+    async delete(url, body = {}, retry = false) {
+        let res = await fetch(this.apiHost + url, {
+            method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': await this.getToken()
+            },
+            body: JSON.stringify(body)
+        });
+        if (res.status === 401 && !retry) {
+            console.log(401);
+            await this.auth();
+            return await this.delete(url, body, true);
         }
         if (res.ok) {
             return await res.json();

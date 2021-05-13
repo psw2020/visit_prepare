@@ -1,6 +1,7 @@
 import {ipcRenderer} from 'electron';
 import {orderHelpers} from './helpers/order';
 import {taskListHelpers} from './helpers/tasklist';
+import {addWorks} from "./helpers/additionalWorkList";
 
 
 /*Список заданий*/
@@ -15,7 +16,6 @@ ipcRenderer.on('taskList', (_, data) => { //Построение списка и
     }
     cache.hasExploitedTask = false; //сбросить признак просроченного задания в кеше
     appendInTaskList(taskListHelpers.createTaskList(data));
-    appendInWorkArea(`<h2>Выберите задание</h2>`);
     addEventForTaskList();
 
     const date = new Date();
@@ -40,7 +40,6 @@ window.getEmployeeList = () => { //Запрос списка исполните�
 
 ipcRenderer.on('employeeList', (_, data) => { //Запись исполнителей в кеш, построение списка заданий
     cache.employeeList = data;
-    getSeasonWorksList();
     getTaskList();
     setInterval(getTaskList, 10 * 60000);
     setInterval(showByTime, 20 * 60000);
@@ -57,19 +56,12 @@ window.getOrderInfo = (docid, clid, contact, docplid) => { //Запрос инф
     ipcRenderer.send('getOrderInfo', {docid, clid, contact, docplid});
 }
 
-ipcRenderer.on('getOrderInfo', (_, data) => { //Вывод полной инфы по заказу
+ipcRenderer.on('getOrderInfo', async (_, data) => { //Вывод полной инфы по заказу
+    cache.addedAdditionalWorks = {}; //обнулить список выбранных работ в кеше
+    cache.additionalWorks = await addWorks.getWorkList(data.orderBaseInfo['NAME'],data.orderBaseInfo['RUN_BEFORE']) || [];
     createFullOrder(orderHelpers.renderFullOrder(data, cache));
     window.addEventForButton();
-    window.addEventForSeasonWorksItem();
-
-})
-/*Сезонные работы*/
-window.getSeasonWorksList = () => {
-    ipcRenderer.send('getSeasonWorks');
-}
-
-ipcRenderer.on('seasonWorks', (_, data) => {
-    cache.seasonWorks = data.split('\r\n');
+    window.addEventForAdditionalWorksItem();
 })
 
 /*Сохранение*/
