@@ -152,3 +152,14 @@ body {
 .exploited{border-color: #8b0400 !important;}
 #addUl li span{color: #ff201a;cursor: pointer;}
 #addUl li:last-child{border-bottom: 1px dashed #4e555b;}
+
+#adwSetup h3{text-align: right;border-bottom: none;}
+.adwTable{color: white;}
+.adwTable td{text-align: center;}
+.adwTable tr td:first-child{text-align: left;}
+
+.adwButtons{
+  width: 200px;
+  margin: 0 auto;
+  padding-bottom: 20px;
+}

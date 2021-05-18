@@ -14,6 +14,7 @@ const addWorks = {
 
         if (!modelId) {
             newMessage(`Модель ${model} не найдена, не удается загрузить список рекомендованных работ`, 'warning');
+            header.remove();
             return false;
         }
 

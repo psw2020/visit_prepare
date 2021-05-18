@@ -3,6 +3,7 @@ import path from "path";
 import icon from 'tray_16.png';
 import Api from './api';
 import {DateTime} from 'luxon';
+import {adws} from "../../preload/helpers/additionalWorksSetup";
 
 export default class VisitPrepare {
     constructor() {
@@ -93,11 +94,15 @@ export default class VisitPrepare {
         this.cache = {};
     }
 
-    createMenu() { //Создание главного меню
+    async createMenu() { //Создание главного меню
         const refresh = () => {
             this.getTaskList();
         }
         const cache = () => this.clearCache();
+        const handler = (data) => {
+            this.window.webContents.send('adwSetupInterfaceLoaded', {data})
+        }
+        const adw = await adws.createMenuObj(handler);
 
         const mainMenu = [
             {
@@ -113,9 +118,14 @@ export default class VisitPrepare {
                     refresh();
                 }
             },
+            {
+                label: 'Изменить дополнительные работы',
+                submenu: adw
+            }
         ]
         const menu = new Menu.buildFromTemplate(mainMenu);
         Menu.setApplicationMenu(menu);
+
     }
 
     getTaskList() { //Запрос списка заданий

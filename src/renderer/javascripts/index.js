@@ -1,10 +1,10 @@
 require('bootstrap.min.css');
 require('application.css');
 
-window.cache = {
+window.cache = { //Кеш
     wasShownByTime: false,
     addedAdditionalWorks: {}
-}; //Кеш
+};
 
 window.onload = () => {
     window.getEmployeeList(); //Запрос списка исполнителей
@@ -18,7 +18,7 @@ window.getTaskListErr = () => { //Ошибка получения списка �
     newMessage('Не удалось загрузить список заданий :(', 'danger');
 }
 
-window.newMessage = (str, type = "primary") => {
+window.newMessage = (str, type = "primary") => { //всплывающее сообщение
     const el = document.getElementById('alert');
     el.innerHTML = `<div class="alert alert-${type} taskListError" role="alert">${str}</div>`;
     setTimeout(() => {
@@ -35,12 +35,12 @@ window.loaderShow = () => {
 </div>`;
 }
 
-window.addEventForButton = () => {
+window.addEventForButton = () => { //обработчики для кнопок сохранить / оформить
     document.getElementById('save').addEventListener('click', () => window.saveOrder());
     document.getElementById('confirm').addEventListener('click', () => window.saveOrder(1));
 }
 
-window.addEventForAdditionalWorksItem = () => {
+window.addEventForAdditionalWorksItem = () => { //обработчики для элементов списка дополнительных работ (добавить / удалить и пр.)
     const el = document.getElementsByClassName('additionalWorksItem');
     const addUl = document.getElementById('addUl');
     for (let i = 0; i < el.length; i++) {
@@ -66,12 +66,12 @@ window.addEventForAdditionalWorksItem = () => {
     }
 }
 
-window.addEventForTaskList = () => {
+window.addEventForTaskList = () => { //обработчики элементов списка заданий
     let items = document.querySelectorAll('.taskListItem');
 
     items.forEach(v => {
             if (+v.dataset.docid && +v.dataset.clid) {
-                cache.currentOrderInfo = {...v.dataset}; //записать в кеш инфу по текущему заказ наряду для обновления после сохранения
+                cache.currentOrderInfo = {...v.dataset}; //записать в кеш инфу по текущему заказ наряду для его обновления после сохранения
                 v.addEventListener('click', () => getOrderInfo(v.dataset.docid, v.dataset.clid, v.dataset.contact, v.dataset.docplid));
             } else if (!+v.dataset.clid) {
                 v.addEventListener('click', () => newMessage('Заданию не назначен клиент', 'warning'));
@@ -82,9 +82,9 @@ window.addEventForTaskList = () => {
     )
 }
 
-window.saveOrder = (confirm = null) => {
+window.saveOrder = (confirm = null) => { //сохранение или оформление заказ наряда
     let obj = {}
-    if (confirm) {
+    if (confirm) { //если "оформление"
         if (checkWorkList()) {
             obj.confirm = true;
         } else {
@@ -94,14 +94,14 @@ window.saveOrder = (confirm = null) => {
         obj.confirm = false;
     }
 
-    obj.workListCheck = createWorkListCheckArr();
-    obj.docInfo = cache.currentOrderInfo;
-    obj.additionalWorks = cache.addedAdditionalWorks;
+    obj.workListCheck = createWorkListCheckArr(); //создание списка работ для сохранения
+    obj.docInfo = cache.currentOrderInfo; //основные id документа
+    obj.additionalWorks = cache.addedAdditionalWorks; //дополнительные работы
     window.sendOrderData(obj);
 }
 
 
-function checkWorkList() {
+function checkWorkList() { //проверка списка работ
     const workReadyList = document.getElementsByClassName('workCheck');
     const employeeList = document.getElementsByClassName('employeeSelect');
 
@@ -123,7 +123,7 @@ function checkWorkList() {
         }
     }
 
-    if(Object.keys(cache.addedAdditionalWorks).length){
+    if(Object.keys(cache.addedAdditionalWorks).length){ //если в заказ были добавлены дополнительные работы и была нажата кнопка "оформить" без сохранения и назначения исполнителя
         newMessage('В заказ добавлены дополнительные работы, сохраните наряд и назначьте исполнителей!', 'warning');
         return false
     }
@@ -131,7 +131,7 @@ function checkWorkList() {
     return true;
 }
 
-function createWorkListCheckArr() {
+function createWorkListCheckArr() { //создает массив списка работ
     let arr = [];
     const workReadyList = document.getElementsByClassName('workCheck');
     const employeeList = document.getElementsByClassName('employeeSelect');

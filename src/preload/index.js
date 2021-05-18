@@ -2,6 +2,7 @@ import {ipcRenderer} from 'electron';
 import {orderHelpers} from './helpers/order';
 import {taskListHelpers} from './helpers/tasklist';
 import {addWorks} from "./helpers/additionalWorkList";
+import {adws} from "./helpers/additionalWorksSetup";
 
 
 /*Список заданий*/
@@ -58,7 +59,7 @@ window.getOrderInfo = (docid, clid, contact, docplid) => { //Запрос инф
 
 ipcRenderer.on('getOrderInfo', async (_, data) => { //Вывод полной инфы по заказу
     cache.addedAdditionalWorks = {}; //обнулить список выбранных работ в кеше
-    cache.additionalWorks = await addWorks.getWorkList(data.orderBaseInfo['NAME'],data.orderBaseInfo['RUN_BEFORE']) || [];
+    cache.additionalWorks = await addWorks.getWorkList(data.orderBaseInfo['NAME'], data.orderBaseInfo['RUN_BEFORE']) || [];
     createFullOrder(orderHelpers.renderFullOrder(data, cache));
     window.addEventForButton();
     window.addEventForAdditionalWorksItem();
@@ -84,6 +85,42 @@ ipcRenderer.on('saveOrderComplete', (_, data) => {
     }
 })
 
+/*настройка доп работ*/
+
+ipcRenderer.on('adwSetupInterfaceLoaded', (_, {data}) => {
+    document.getElementById('workArea').hidden = true;
+    document.getElementById('taskList').hidden = true;
+    appendInAdwSetup(data.html);
+    for (let i = 0; i < data.meta.length; i++) {
+        document.getElementById(`${data.meta[i]['work_id'] + 'm' + data.meta[i]['mileage']}`).checked = true;
+    }
+    document.getElementById('adwSetup').hidden = false;
+
+    document.getElementById('saveAdwTable').addEventListener('click', (e) => {
+        (e.target).setAttribute('disabled','disabled');
+        saveAdwTable(data.modelId);
+    })
+
+    document.getElementById('closeAdwTable').addEventListener('click', () => {
+        document.getElementById('adwSetup').hidden = true;
+        document.getElementById('workArea').hidden = false;
+        document.getElementById('taskList').hidden = false;
+    })
+})
+
+async function saveAdwTable(id) {
+    let meta = [];
+    const tb = document.getElementsByClassName('adwTable')[0];
+    const checked = tb.querySelectorAll('input[type="checkbox"]:checked');
+
+    checked.forEach(v => {
+        meta.push({workId: v.dataset.workid, mileage: v.dataset.mileage});
+    })
+    await adws.saveMetadata(id, meta);
+    document.getElementById('saveAdwTable').removeAttribute('disabled');
+    newMessage('Успешно сохранено', 'success');
+}
+
 /*other*/
 
 const showByTime = () => {
@@ -92,4 +129,8 @@ const showByTime = () => {
         ipcRenderer.send('showWindow');
         cache.wasShownByTime = true;
     }
+}
+
+const appendInAdwSetup = str => {
+    document.getElementById('adwSetup').innerHTML = str;
 }

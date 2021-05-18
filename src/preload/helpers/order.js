@@ -20,7 +20,7 @@ const orderHelpers = {
         ${createPartList(o.workList, cache.employeeList)}
         </div>
         
-        <h3>Добавить подходящие работы:</h3>
+        ${(cache.additionalWorks.length) ? `<h3>Добавить подходящие работы:</h3>` : ``}
         <div class="addedAdditionalWorks">
         <ul id="addUl">
         
