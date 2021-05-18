@@ -1,5 +1,5 @@
-require('bootstrap.min.css');
-require('application.css');
+require(`bootstrap.min.css`);
+require(`application.css`);
 
 window.cache = { //Кеш
     wasShownByTime: false,

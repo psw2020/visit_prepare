@@ -6,7 +6,7 @@ export default class Api {
         this.user = user;
         this.localhost = 'http://127.0.0.1:3010/';
         this.deployhost = 'http://172.16.1.20:3010/';
-        this.apiHost = this.localhost;
+        this.apiHost = this.deployhost;
         this.token = null;
         this.refresh = null;
     }

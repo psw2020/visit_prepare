@@ -67,7 +67,7 @@ async function workList(workArr) {
     return await api.get(`visitPrepare/workList?id=${workArr.join()}`);
 }
 
-async function suitableWorks(modelId, mileageArr) {
+async function suitableWorks(modelId, mileageArr) { //список работ подходящих по пробегу
     const arr = await api.get(`visitPrepare/suitableWorks?id=${modelId}&mileage=${mileageArr.join()}`);
     return arr.map(v => v['work_id']);
 }

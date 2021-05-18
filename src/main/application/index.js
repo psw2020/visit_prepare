@@ -56,7 +56,7 @@ export default class VisitPrepare {
             }
         })
         this.window.loadFile('renderer/index.html');
-        this.window.webContents.openDevTools({mode: 'detach'});
+        //this.window.webContents.openDevTools({mode: 'detach'});
 
         this.tray = new Tray(path.resolve(__dirname, icon));
         this.tray.setToolTip('Подготовка к визиту');
@@ -185,7 +185,7 @@ export default class VisitPrepare {
 
     }
 
-    async saveOrder(data) {
+    async saveOrder(data) { //сохранить задание
         let obj = {};
         const {...docInfo} = data.docInfo;
         const err = () => {

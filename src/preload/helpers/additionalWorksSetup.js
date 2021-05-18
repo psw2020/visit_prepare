@@ -4,7 +4,7 @@ import {adwSetupInterface} from "./adwSetupInterface";
 const api = new Api();
 
 const adws = {
-    async createMenuObj(handler) {
+    async createMenuObj(handler) { //создает объет подменю пункта меню "Изменить дополнительные работы", назначает обработчки из аргумента
         let marks = await getMarkList();
         const models = await getModelList();
         models.forEach(v => {
@@ -15,13 +15,13 @@ const adws = {
 
         for (let k in marks) {
             let submenu = [];
-            marks[k].models.forEach(v => {
+            marks[k]['models'].forEach(v => {
                 submenu.push({
                     label: v.name,
                     click() {
-                        adwSetupInterface.loadInterface(v.id, v.name).then(res => {
-                            handler(res);
-                        }, rej => console.log(rej));
+                        adwSetupInterface.loadInterface(v.id, v.name).then(
+                            res => handler(res),
+                            rej => console.log(rej));
                     }
                 });
             })
@@ -36,11 +36,11 @@ const adws = {
 
     },
 
-    async saveMetadata(id, meta) {
+    async saveMetadata(id, meta) { //сохранить новую комбинацию
         await api.delete(`visitPrepare/deleteMetadata?id=${id}`); //удаляем все старые комбинации работа / модель / пробег по id модели
-        meta.forEach(async (v) => {
-            await api.post('visitPrepare/insertMeta', {modelId: id, workId: v.workId, mileage: v.mileage});
-        });
+        for (let i = 0; i < meta.length; i++) {
+            await api.post('visitPrepare/insertMeta', {modelId: id, workId: v.workId, mileage: v.mileage}); //циклом добавляем в БД новые комбинации
+        }
     }
 }
 

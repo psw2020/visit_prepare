@@ -87,21 +87,23 @@ ipcRenderer.on('saveOrderComplete', (_, data) => {
 
 /*настройка доп работ*/
 
-ipcRenderer.on('adwSetupInterfaceLoaded', (_, {data}) => {
+ipcRenderer.on('adwSetupInterfaceLoaded', (_, {data}) => { //принимаем объет с html и meta с бэка
     document.getElementById('workArea').hidden = true;
     document.getElementById('taskList').hidden = true;
-    appendInAdwSetup(data.html);
-    for (let i = 0; i < data.meta.length; i++) {
-        document.getElementById(`${data.meta[i]['work_id'] + 'm' + data.meta[i]['mileage']}`).checked = true;
-    }
-    document.getElementById('adwSetup').hidden = false;
+    appendInAdwSetup(data.html);// вставляем таблицу
 
-    document.getElementById('saveAdwTable').addEventListener('click', (e) => {
+    for (let i = 0; i < data.meta.length; i++) {
+        document.getElementById(`${data.meta[i]['work_id'] + 'm' + data.meta[i]['mileage']}`).checked = true; //отмечаем в таблице чекбоксы из мета
+    }
+
+    document.getElementById('adwSetup').hidden = false; //отображаем таблицу
+
+    document.getElementById('saveAdwTable').addEventListener('click', async (e) => { //обработчик кнопки "Сохранить"
         (e.target).setAttribute('disabled','disabled');
-        saveAdwTable(data.modelId);
+        await saveAdwTable(data.modelId); //сохранение таблицы
     })
 
-    document.getElementById('closeAdwTable').addEventListener('click', () => {
+    document.getElementById('closeAdwTable').addEventListener('click', () => { //Обработчик кнопки "Закрыть"
         document.getElementById('adwSetup').hidden = true;
         document.getElementById('workArea').hidden = false;
         document.getElementById('taskList').hidden = false;
@@ -111,9 +113,9 @@ ipcRenderer.on('adwSetupInterfaceLoaded', (_, {data}) => {
 async function saveAdwTable(id) {
     let meta = [];
     const tb = document.getElementsByClassName('adwTable')[0];
-    const checked = tb.querySelectorAll('input[type="checkbox"]:checked');
+    const checked = tb.querySelectorAll('input[type="checkbox"]:checked'); //коллекция отмеченных чекбоксов
 
-    checked.forEach(v => {
+    checked.forEach(v => { //создаем новые комбинации перебором коллекции
         meta.push({workId: v.dataset.workid, mileage: v.dataset.mileage});
     })
     await adws.saveMetadata(id, meta);

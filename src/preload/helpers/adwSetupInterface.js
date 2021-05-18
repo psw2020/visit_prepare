@@ -3,17 +3,13 @@ import Api from "../../main/application/api";
 const api = new Api();
 
 const adwSetupInterface = {
-    async loadInterface(id, name) {
-        const mileages = [15000, 30000, 60000, 90000, 105000];
-        const meta = await api.get(`visitPrepare/meta?id=${id}`);
-        const allWorksList = await getAllWorksList();
-        const table = createTable(mileages, allWorksList, name);
+    async loadInterface(id, name) { //формирует объект для отрисовки таблицы редактирования доп работ
+        const mileages = [15000, 30000, 60000, 90000, 105000]; //массив возможных пробегов
+        const meta = await api.get(`visitPrepare/meta?id=${id}`); //получить комбинации модель / работа / пробег из БД
+        const allWorksList = await api.get(`visitPrepare/allWorksList`); //список всех работ из автодилера
+        const table = createTable(mileages, allWorksList, name); //формирование html
         return {html: table, meta, modelId: id};
     }
-}
-
-async function getAllWorksList() {
-    return await api.get(`visitPrepare/allWorksList`);
 }
 
 function createTable(mileageArr, workList, name) {
