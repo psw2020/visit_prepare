@@ -1,6 +1,6 @@
 {
   "name": "visit_prepare",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "description": "VisitPrepare application build with Electron",
   "author": "psw2020",
   "repository": "https://github.com/psw2020/visit_prepare",
