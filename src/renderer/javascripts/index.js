@@ -1,5 +1,5 @@
-require(`bootstrap.min.css`);
-require(`application.css`);
+require('bootstrap.min.css');
+require('application.css');
 
 window.cache = { //Кеш
     wasShownByTime: false,
@@ -8,6 +8,14 @@ window.cache = { //Кеш
 
 window.onload = () => {
     window.getEmployeeList(); //Запрос списка исполнителей
+    document.getElementById('exitPass').addEventListener('submit', (e) => {
+        e.preventDefault();
+        const code = e.target[0].value;
+        window.sendExitCode(code);
+    })
+    document.getElementById('closeExitPass').addEventListener('click',()=>{
+        document.getElementById('prompt').style.display = 'none';
+    })
 }
 
 window.createFullOrder = (str) => { //Вставить html в workArea

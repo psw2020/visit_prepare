@@ -4,7 +4,6 @@ import {taskListHelpers} from './helpers/tasklist';
 import {addWorks} from "./helpers/additionalWorkList";
 import {adws} from "./helpers/additionalWorksSetup";
 
-
 /*Список заданий*/
 window.getTaskList = () => { //Запрос списка задач с сервера
     ipcRenderer.send('getTaskList');
@@ -99,7 +98,7 @@ ipcRenderer.on('adwSetupInterfaceLoaded', (_, {data}) => { //принимаем 
     document.getElementById('adwSetup').hidden = false; //отображаем таблицу
 
     document.getElementById('saveAdwTable').addEventListener('click', async (e) => { //обработчик кнопки "Сохранить"
-        (e.target).setAttribute('disabled','disabled');
+        (e.target).setAttribute('disabled', 'disabled');
         await saveAdwTable(data.modelId); //сохранение таблицы
     })
 
@@ -136,3 +135,16 @@ const showByTime = () => {
 const appendInAdwSetup = str => {
     document.getElementById('adwSetup').innerHTML = str;
 }
+
+ipcRenderer.on('showExitPass',()=>{
+    document.getElementById('prompt').style.display = 'block';
+    console.log('exit')
+})
+
+window.sendExitCode = (code)=>{
+    ipcRenderer.send('exitCode', {code});
+}
+
+ipcRenderer.on('badExitCode',()=>{
+    newMessage('Неверный код выхода','danger');
+})

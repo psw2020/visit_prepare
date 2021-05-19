@@ -14,14 +14,21 @@ const addWorks = {
 
         if (!modelId) {
             newMessage(`Модель ${model} не найдена, не удается загрузить список рекомендованных работ`, 'warning');
-            header.remove();
             return false;
         }
 
         const mileageArr = await uniqueRanges(modelId);
+
+        if (!mileageArr.length) {
+            newMessage(`Для данной модели не назначены дополнительные работы!`, 'warning');
+            return false;
+        }
+
         const suitableMileageArr = await suitableMileage(mileage, mileageArr);
+
+
         const suitableWorksId = await suitableWorks(modelId, suitableMileageArr);
-        return await workList(suitableWorksId);
+        return await workList(suitableWorksId, modelId);
     },
     test(str) {
         return uniqueRanges(str);
@@ -63,8 +70,13 @@ async function uniqueRanges(id) { //Возвращает массив возмо
     return arr.map(v => v['mileage']);
 }
 
-async function workList(workArr) {
-    return await api.get(`visitPrepare/workList?id=${workArr.join()}`);
+async function workList(workArr, modelId) {
+    const meta = await api.get(`visitPrepare/meta?id=${modelId}`); //грузим мету, чтобы достать интервала пробега
+    const workList = await api.get(`visitPrepare/workList?id=${workArr.join()}`); //список работ под пробеги из массива
+    workList.forEach(v => {
+        v.mileage = meta.filter(mv => mv['work_id'] === v['ID'])[0].mileage; //перебираем список работ чтобы добавить в объект установленный интервал пробега
+    });
+    return workList;
 }
 
 async function suitableWorks(modelId, mileageArr) { //список работ подходящих по пробегу

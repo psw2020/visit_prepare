@@ -40,6 +40,7 @@ function createAdditionalWorksList(arr) {
 
     for (let i = 0; i < arr.length; i++) {
         str += `<li class="additionalWorksItem" 
+                title="Каждые ${arr[i]['mileage']}км. пробега"
                 data-id="${arr[i]['ID']}"
                 data-price="${arr[i]['PRICE']}" 
                 data-time="${arr[i]['TIME_VALUE']}">${arr[i]['NAME']}</li>`;

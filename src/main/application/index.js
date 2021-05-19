@@ -56,18 +56,22 @@ export default class VisitPrepare {
             }
         })
         this.window.loadFile('renderer/index.html');
-        //this.window.webContents.openDevTools({mode: 'detach'});
+        this.window.webContents.openDevTools({mode: 'detach'});
 
         this.tray = new Tray(path.resolve(__dirname, icon));
         this.tray.setToolTip('Подготовка к визиту');
         this.tray.on("double-click", () => {
             this.window.isVisible() ? this.window.hide() : this.window.show();
         })
+        const sendExit = () => {
+            this.window.webContents.send('showExitPass');
+        }
+
         this.tray.setContextMenu(Menu.buildFromTemplate([
                 {
                     label: 'Выход',
                     click() {
-                        app.exit();
+                        sendExit();
                     }
                 }
             ]
@@ -181,6 +185,14 @@ export default class VisitPrepare {
                 this.window.setMinimizable(true);
                 this.window.setAlwaysOnTop(false);
             }, data.second * 1000)
+        })
+
+        ipcMain.on('exitCode', (_, data) => {
+            if (+data.code !== 1426212) {
+                this.window.webContents.send('badExitCode');
+            } else {
+                app.exit();
+            }
         })
 
     }

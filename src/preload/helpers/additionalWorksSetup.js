@@ -39,7 +39,7 @@ const adws = {
     async saveMetadata(id, meta) { //сохранить новую комбинацию
         await api.delete(`visitPrepare/deleteMetadata?id=${id}`); //удаляем все старые комбинации работа / модель / пробег по id модели
         for (let i = 0; i < meta.length; i++) {
-            await api.post('visitPrepare/insertMeta', {modelId: id, workId: v.workId, mileage: v.mileage}); //циклом добавляем в БД новые комбинации
+            await api.post('visitPrepare/insertMeta', {modelId: id, workId: meta[i].workId, mileage: meta[i].mileage}); //циклом добавляем в БД новые комбинации
         }
     }
 }
