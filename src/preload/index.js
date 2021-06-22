@@ -138,7 +138,6 @@ const appendInAdwSetup = str => {
 
 ipcRenderer.on('showExitPass',()=>{
     document.getElementById('prompt').style.display = 'block';
-    console.log('exit')
 })
 
 window.sendExitCode = (code)=>{
