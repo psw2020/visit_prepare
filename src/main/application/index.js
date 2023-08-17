@@ -210,6 +210,8 @@ export default class VisitPrepare {
                 obj.ok = true;
             }
 
+            await this.api.put(`task/updateTaskLeavesNight?docpl=${docInfo.docplid}&val=${+data.leavesNight}`);
+
             for (let v of data.workListCheck) {
                 await this.api.put(`employee/setEmployeeOnWork?workid=${v.workId}&employee=${v.employee}&ready=${v.ready}`);
             }

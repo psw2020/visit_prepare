@@ -51,9 +51,9 @@ ipcRenderer.on('getEmployeeListErr', () => { //Если вернулась ош�
 })
 
 /*Заказ наряд*/
-window.getOrderInfo = (docid, clid, contact, docplid) => { //Запрос информации по заказу с сервера
+window.getOrderInfo = (docid, clid, contact, docplid, leavesNight) => { //Запрос информации по заказу с сервера
     window.loaderShow();
-    ipcRenderer.send('getOrderInfo', {docid, clid, contact, docplid});
+    ipcRenderer.send('getOrderInfo', {docid, clid, contact, docplid, leavesNight});
 }
 
 ipcRenderer.on('getOrderInfo', async (_, data) => { //Вывод полной инфы по заказу
@@ -136,14 +136,14 @@ const appendInAdwSetup = str => {
     document.getElementById('adwSetup').innerHTML = str;
 }
 
-ipcRenderer.on('showExitPass',()=>{
+ipcRenderer.on('showExitPass', () => {
     document.getElementById('prompt').style.display = 'block';
 })
 
-window.sendExitCode = (code)=>{
+window.sendExitCode = (code) => {
     ipcRenderer.send('exitCode', {code});
 }
 
-ipcRenderer.on('badExitCode',()=>{
-    newMessage('Неверный код выхода','danger');
+ipcRenderer.on('badExitCode', () => {
+    newMessage('Неверный код выхода', 'danger');
 })

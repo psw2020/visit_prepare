@@ -8,7 +8,6 @@ const taskListHelpers = {
         let str = `<div class="taskListWrapper">`;
         let taskCounter = 0; //счетчик заданий
         arr.forEach(v => {
-
             if (v.differenceToOder < 0) return; //если задание просрочено не обрабатывать его
 
             taskCounter++;
@@ -25,7 +24,7 @@ const taskListHelpers = {
             makeNotify(v); //выкинуть уведомления, если надо
 
             str += `
-          <div title="${v.notes || ``}" class="taskListItem ${cl} ${complete} ${exploited}" data-complete="${complete}" data-docid="${v.docid}" data-clid="${v.clid}" data-contact="${v.contact}" data-docplid="${v.docplid}">
+          <div title="${v.notes || ``}" class="taskListItem ${cl} ${complete} ${exploited}" data-complete="${complete}" data-docid="${v.docid}" data-leave_night="${v.leavesNight}" data-clid="${v.clid}" data-contact="${v.contact}" data-docplid="${v.docplid}">
             <p class="date">${v.date} ${(v.fullNumber) ? `з/н ${v.fullNumber}` : ''}</p>
             <p class="model">${(v.mark) ? `${v.mark} ${v.model}` : `${notes}`}</p>
             <p class="gosnumber">${(v.regno) ? `${v.regno}` : `---`}</p>
@@ -77,7 +76,8 @@ function taskListObjClear(arr) {
             CLIENT_CONTACT_ID: contact,
             DP_MARK: taskMark,
             NOTES: notes,
-            FULLNUMBER: fullNumber
+            FULLNUMBER: fullNumber,
+            LEAVES_NIGHT: leavesNight
         } = v;
         let isToday = false;
         let differenceToOder = (Math.round((new Date(date) - dateNow) / 1000 / 60)); //сколько минут осталось до начала задания
@@ -100,7 +100,8 @@ function taskListObjClear(arr) {
             differenceToOder,
             differenceFromCreate,
             isToday,
-            fullNumber
+            fullNumber,
+            leavesNight
         });
     });
     return a;

@@ -3,6 +3,7 @@ import {DateTime} from "luxon";
 const orderHelpers = {
     renderFullOrder(obj, cache) {
         const o = fullOrderObjClear(obj);
+
         return `<h3>Общая информация</h3>
         <p>${o.name}</p>
         <p>Телефон: ${o.phone}</p>
@@ -10,6 +11,7 @@ const orderHelpers = {
         <p>Платежей: ${o.payments}</p>
         <p>Средний чек: ${o.check}р</p>
         <p>Своих запчастей: ${o.ownParts}%</p>
+        <p>Клиент оставляет машину на ночь <input id="leavesNight" type="checkbox" ${+cache.currentOrderInfo['leave_night'] ? 'checked' : ''}></p>
 
         <h3>Бонусная программа</h3>
         <p>Доступно бонусов: ${o.bonus}</p>
@@ -89,7 +91,7 @@ function createEmployeeOptions(arr, id) {
 
 function fullOrderObjClear(obj) {
     let burnDate = (typeof obj.bonusFirstBurnDate == "undefined") ? null :
-        (obj.bonusFirstBurnDate) ? DateTime.fromISO(obj.bonusFirstBurnDate.delete_date).toFormat('dd.LL.yyyy') : null;
+        (obj.bonusFirstBurnDate) ? DateTime.fromISO(obj.bonusFirstBurnDate['delete_date']).toFormat('dd.LL.yyyy') : null;
     let burnSum = (typeof obj.bonusFirstBurnDate == "undefined") ? null :
         (obj.bonusFirstBurnDate) ? toClearInt(obj.bonusFirstBurnDate.sum) : null;
     return {

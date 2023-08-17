@@ -13,7 +13,7 @@ window.onload = () => {
         const code = e.target[0].value;
         window.sendExitCode(code);
     })
-    document.getElementById('closeExitPass').addEventListener('click',()=>{
+    document.getElementById('closeExitPass').addEventListener('click', () => {
         document.getElementById('prompt').style.display = 'none';
     })
 }
@@ -80,7 +80,7 @@ window.addEventForTaskList = () => { //обработчики элементов
     items.forEach(v => {
             if (+v.dataset.docid && +v.dataset.clid) {
                 cache.currentOrderInfo = {...v.dataset}; //записать в кеш инфу по текущему заказ наряду для его обновления после сохранения
-                v.addEventListener('click', () => getOrderInfo(v.dataset.docid, v.dataset.clid, v.dataset.contact, v.dataset.docplid));
+                v.addEventListener('click', () => getOrderInfo(v.dataset.docid, v.dataset.clid, v.dataset.contact, v.dataset.docplid, v.dataset.leavesNight));
             } else if (!+v.dataset.clid) {
                 v.addEventListener('click', () => newMessage('Заданию не назначен клиент', 'warning'));
             } else {
@@ -105,6 +105,8 @@ window.saveOrder = (confirm = null) => { //сохранение или офор�
     obj.workListCheck = createWorkListCheckArr(); //создание списка работ для сохранения
     obj.docInfo = cache.currentOrderInfo; //основные id документа
     obj.additionalWorks = cache.addedAdditionalWorks; //дополнительные работы
+    obj.leavesNight = document.getElementById('leavesNight').checked;
+    cache.currentOrderInfo['leave_night'] = obj.leavesNight;
     window.sendOrderData(obj);
 }
 
@@ -131,7 +133,7 @@ function checkWorkList() { //проверка списка работ
         }
     }
 
-    if(Object.keys(cache.addedAdditionalWorks).length){ //если в заказ были добавлены дополнительные работы и была нажата кнопка "оформить" без сохранения и назначения исполнителя
+    if (Object.keys(cache.addedAdditionalWorks).length) { //если в заказ были добавлены дополнительные работы и была нажата кнопка "оформить" без сохранения и назначения исполнителя
         newMessage('В заказ добавлены дополнительные работы, сохраните наряд и назначьте исполнителей!', 'warning');
         return false
     }
